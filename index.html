@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="RentHub GenSan — event, entertainment, photography, camping and beach equipment rentals in General Santos City. Reserve online, pick up in store.">
+<meta name="description" content="RentHub Gensan — event, entertainment, photography, camping and beach equipment rentals in General Santos City. Reserve online, pick up in store.">
 <meta name="theme-color" content="#12386B">
-<meta property="og:title" content="RentHub GenSan">
+<meta property="og:title" content="RentHub Gensan">
 <meta property="og:description" content="Rent what you need, the smarter choice indeed. Equipment rentals in General Santos City.">
 <meta property="og:image" content="assets/logo.jpg">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<title>RentHub GenSan</title>
+<title>RentHub Gensan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
@@ -148,8 +148,6 @@ select option{color:var(--ink);background:var(--surface)}
 .package-includes{list-style:none;padding:0;margin:0;display:grid;gap:7px;font-size:13.5px;color:var(--muted)}
 .package-includes li{display:flex;justify-content:space-between;gap:12px}
 .package-includes b{color:var(--ink);font-weight:700}
-.package-includes li.package-fin-choice{display:grid;gap:6px}
-.package-fin-choice label{font-size:12px;font-weight:700;color:var(--ink)}
 .package-card .btn{margin-top:auto}
 .package-note{font-size:13px;color:var(--muted);margin-top:16px}
 
@@ -636,9 +634,9 @@ img{max-width:100%}
 <body>
 
 
-<div class="topbar"><div class="wrap"><span>Pickup only at our General Santos City shop · <b>No delivery</b></span><span class="hide-sm">Open Mon–Sat 8:00 AM – 6:00 PM · Sun 9:00 AM – 3:00 PM</span></div></div>
+<div class="topbar"><div class="wrap"><span>Pickup only at our General Santos City shop · <b>No delivery</b></span><span class="hide-sm">Open Mon–Sat 9:00 AM – 5:00 PM · Closed Sundays</span></div></div>
 <header class="hdr"><div class="wrap">
-  <button class="brand" data-go="home" aria-label="RentHub GenSan home"><img src="assets/logo.jpg" alt=""><span><b>Rent<span>Hub</span></b><small>GENSAN</small></span></button>
+  <button class="brand" data-go="home" aria-label="RentHub Gensan home"><img src="assets/logo.jpg" alt=""><span><b>Rent<span>Hub</span></b><small>GENSAN</small></span></button>
   <nav class="nav" id="nav"></nav>
   <div class="hdr-right" id="hdrRight"></div>
 </div></header>
@@ -660,47 +658,49 @@ const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate()+n); return
 const TODAY = iso(new Date());
 const daysBetween = (a,b) => Math.round((parse(b)-parse(a))/86400000);
 const rentalDays = (a,b) => Math.max(1, daysBetween(a,b));
+// Short-term is up to 6 days and long-term is 7 days and above.
+const rentalTerm = d => d>=7 ? 'Long-term rental' : 'Short-term rental';
 const fmt = s => parse(s).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
 const fmtShort = s => parse(s).toLocaleDateString('en-PH',{month:'short',day:'numeric'});
 const fmtDow = s => parse(s).toLocaleDateString('en-PH',{weekday:'short'});
+const isSunday = s => parse(s).getDay()===0;
 const eachDay = (a,b) => { const out=[]; let d=a; while(d<=b){ out.push(d); d=addDays(d,1);} return out; };
 
 /* ---------- catalog data ---------- */
 const CATS = [
-  {id:'events', name:'Events & Parties', blurb:'Seating, tables and sound for birthdays, weddings and fiestas.', hero:'tables'},
-  {id:'entertainment', name:'Entertainment', blurb:'Karaoke nights, movie screenings and game tables.', hero:'karaoke'},
-  {id:'photography', name:'Photography', blurb:'Cameras and lighting gear for shoots on land and underwater.', hero:'dslr'},
-  {id:'outdoor', name:'Outdoor & Camping', blurb:'Tents, chairs and tables for Lake Sebu and mountain trips.', hero:'tent'},
-  {id:'beach', name:'Beach & Water', blurb:'Snorkeling and safety gear for Sarangani Bay outings.', hero:'mask'},
+  {id:'events', name:'Events and Parties', blurb:'Seating, tables and sound for birthdays, weddings and fiestas.', hero:'tables'},
+  {id:'entertainment', name:'Entertainment Equipment', blurb:'Karaoke nights, movie screenings and game tables.', hero:'karaoke'},
+  {id:'photography', name:'Photography and Content Creation', blurb:'Cameras and lighting gear for shoots on land and underwater.', hero:'dslr'},
+  {id:'outdoor', name:'Outdoor and Camping', blurb:'Tents, chairs and tables for Lake Sebu and mountain trips.', hero:'tent'},
+  {id:'beach', name:'Beach and Water Activities', blurb:'Snorkeling and safety gear for Sarangani Bay outings.', hero:'mask'},
 ];
+// Package contents, prices and deposits follow Table 6 of the feasibility study.
 const RENTAL_PACKAGES = [
-  {name:'Events and Parties',cat:'events',price:1400,deposit:700,items:[['chairs',50],['tables',5],['sound',1]]},
-  {name:'Entertainment Equipment',cat:'entertainment',price:1700,deposit:850,items:[['karaoke',1],['boardgames',2],['projector',1]]},
-  {name:'Photography and Content Creation',cat:'photography',price:720,deposit:360,items:[['dslr',1],['underwater',1],['reflector',1]]},
-  {name:'Outdoor and Camping',cat:'outdoor',price:550,deposit:275,items:[['tent',1],['campchair',4],['camptable',1]]},
-  {name:'Beach and Water Activities',cat:'beach',price:1530,deposit:765,items:[['fins-plastic',4],['mask',4],['vest',4]]},
+  {name:'Events and Parties',cat:'events',price:1400,deposit:700,items:[['chairs',20],['tables',4],['sound',1]]},
+  {name:'Entertainment Equipment',cat:'entertainment',price:1700,deposit:850,items:[['karaoke',1],['projector',1],['boardgames',1]]},
+  {name:'Photography and Content Creation',cat:'photography',price:720,deposit:360,items:[['dslr',1],['reflector',1]]},
+  {name:'Outdoor and Camping',cat:'outdoor',price:550,deposit:275,items:[['tent',1],['campchair',2],['camptable',1]]},
+  {name:'Beach and Water Activities',cat:'beach',price:1130,deposit:565,items:[['underwater',1],['fins',2],['mask',2],['vest',2]]},
 ];
+// Rates follow Table 5 and stock follows Table 22 of the feasibility study.
 const SEED_ITEMS = [
-  {id:'chairs', cat:'events', name:'Event Chair', price:15, unit:'chair', deposit:8, stock:200, desc:'White resin monoblock chairs with seat covers available on request. Stackable, easy to transport in a pickup or van.', includes:['Wiped and sanitized before release','Stack of 10 per bundle','Optional white seat cover (+₱10)']},
-  {id:'tables', cat:'events', name:'Event Table', price:120, unit:'table', deposit:60, stock:30, desc:'6-ft rectangular folding tables that seat 6–8 guests. Comes with a white table cloth.', includes:['White table cloth included','Folding steel legs','Seats 6–8 guests']},
-  {id:'sound', cat:'events', name:'Sound System', price:800, unit:'set', deposit:400, stock:3, desc:'Pair of 15-inch powered speakers with a 12-channel mixer and two wireless microphones. Good for up to 150 guests.', includes:['2 × 15" powered speakers with stands','12-channel mixer','2 wireless mics','Cables and extension reel']},
-  {id:'karaoke', cat:'entertainment', name:'Karaoke Machine', price:800, unit:'set', deposit:400, stock:4, desc:'Plug-and-play videoke unit with 30,000+ songs, scoring, and two wired microphones. Connects to any TV via HDMI.', includes:['Videoke player with song book','2 wired microphones','HDMI and remote control']},
-  {id:'boardgames', cat:'entertainment', name:'Board Game Set', price:80, unit:'set', deposit:40, stock:12, desc:'Pick from party and strategy titles for 2–10 players. Each box is counted and checked before release.', includes:['Complete set, piece-counted','Rules sheet in English and Filipino','Pick titles at the counter']},
-  {id:'projector', cat:'entertainment', name:'Projector and Screen Set', price:1000, unit:'set', deposit:500, stock:3, desc:'Full HD 3,500-lumen projector with a 100-inch tripod screen. Ideal for outdoor movie nights and presentations.', includes:['1080p projector, 3,500 lumens','100" tripod screen','HDMI cable and carry case']},
-  {id:'dslr', cat:'photography', name:'DSLR Camera', price:650, unit:'kit', deposit:325, stock:4, desc:'24MP DSLR with an 18–55mm kit lens, 64GB card and two batteries. Great for events, portraits and travel.', includes:['24MP body + 18–55mm lens','64GB SD card','2 batteries and charger','Padded camera bag']},
-  {id:'underwater', cat:'photography', name:'Underwater Camera', price:600, unit:'kit', deposit:300, stock:4, desc:'4K action camera in a 40m waterproof housing with a floating hand grip. Built for snorkeling and diving.', includes:['4K action camera','Waterproof housing (40m)','Floating hand grip','32GB card']},
-  {id:'reflector', cat:'photography', name:'Photography Reflector Set', price:150, unit:'set', deposit:75, stock:5, desc:'5-in-1 collapsible 110cm reflector with gold, silver, white, black and diffuser surfaces, plus a holder arm.', includes:['5-in-1 reflector, 110cm','Light stand with holder arm','Zip carry bag']},
-  {id:'tent', cat:'outdoor', name:'Camping Tent', price:350, unit:'tent', deposit:175, stock:10, desc:'Waterproof 4-person dome tent with rain fly and ground sheet. Sets up in about 10 minutes.', includes:['4-person dome tent','Rain fly and ground sheet','Stakes and guy lines']},
-  {id:'campchair', cat:'outdoor', name:'Folding Camping Chair', price:75, unit:'chair', deposit:38, stock:20, desc:'Lightweight steel-frame chair with cup holder and shoulder bag. Supports up to 120kg.', includes:['Cup holder armrest','Carry bag with strap','120kg capacity']},
-  {id:'camptable', cat:'outdoor', name:'Folding Camping Table', price:120, unit:'table', deposit:60, stock:8, desc:'Aluminum roll-top table that folds into a carry bag. Fits 4 people for meals at camp.', includes:['Aluminum roll-top','Adjustable legs','Carry bag']},
-  {id:'fins-plastic', cat:'beach', name:'Plastic Fins (Pair)', price:250, unit:'pair', deposit:125, stock:8, desc:'Lightweight plastic fins for snorkeling and recreational diving. Sizes S to XL.', includes:['Lightweight plastic blades','Sizes S–XL','Rinsed and sanitized']},
-  {id:'fins-carbon', cat:'beach', name:'Carbon Fiber Fins (Pair)', price:500, unit:'pair', deposit:250, stock:4, desc:'Responsive carbon fiber fins for snorkeling and recreational diving. Sizes S to XL.', includes:['Responsive carbon fiber blades','Sizes S–XL','Rinsed and sanitized']},
-  {id:'fins-ice', cat:'beach', name:'Ice Fins (Pair)', price:300, unit:'pair', deposit:150, stock:4, desc:'Ice fins for snorkeling and recreational diving. Sizes S to XL.', includes:['Durable ice-fins construction','Sizes S–XL','Rinsed and sanitized']},
-  {id:'fins-short', cat:'beach', name:'Short Fins (Pair)', price:150, unit:'pair', deposit:75, stock:8, desc:'Compact short-blade fins for snorkeling and recreational swimming. Sizes S to XL.', includes:['Compact short blades','Sizes S–XL','Rinsed and sanitized']},
-  {id:'mask', cat:'beach', name:'Diving Mask', price:60, unit:'mask', deposit:30, stock:16, desc:'Tempered-glass mask with silicone skirt and a dry-top snorkel. Anti-fog treated before every rental.', includes:['Tempered-glass lens','Dry-top snorkel','Anti-fog treated']},
-  {id:'vest', cat:'beach', name:'Life Vest (Kids/Adults)', price:120, unit:'vest', deposit:60, stock:20, desc:'Coast-guard-style buoyancy vests with buckles and crotch strap. Available in kids (15–40kg) and adult sizes.', includes:['Kids and adult sizes','Buckle closure + crotch strap','Reflective tape']},
+  {id:'chairs', cat:'events', name:'Event Chair', price:15, unit:'chair', deposit:8, stock:40, desc:'White resin monoblock chairs. Stackable, easy to transport in a pickup or van.', includes:['Wiped and sanitized before release','Stack of 10 per bundle']},
+  {id:'tables', cat:'events', name:'Event Table', price:120, unit:'table', deposit:60, stock:10, desc:'6-ft rectangular folding tables that seat 6–8 guests. Comes with a white table cloth.', includes:['White table cloth included','Folding steel legs','Seats 6–8 guests']},
+  {id:'sound', cat:'events', name:'Sound System', price:800, unit:'set', deposit:400, stock:2, desc:'Pair of 15-inch powered speakers with a 12-channel mixer and two wireless microphones. Good for up to 150 guests.', includes:['2 × 15" powered speakers with stands','12-channel mixer','2 wireless mics','Cables and extension reel']},
+  {id:'karaoke', cat:'entertainment', name:'Karaoke Machine', price:800, unit:'set', deposit:400, stock:2, desc:'Plug-and-play videoke unit with 30,000+ songs, scoring, and two wired microphones. Connects to any TV via HDMI.', includes:['Videoke player with song book','2 wired microphones','HDMI and remote control']},
+  {id:'boardgames', cat:'entertainment', name:'Board Game Set', price:80, unit:'set', deposit:40, stock:10, desc:'Pick from party and strategy titles for 2–10 players. Each box is counted and checked before release.', includes:['Complete set, piece-counted','Rules sheet in English and Filipino','Pick titles at the counter']},
+  {id:'projector', cat:'entertainment', name:'Projector and Screen Set', price:1000, unit:'set', deposit:500, stock:2, desc:'Full HD 3,500-lumen projector with a 100-inch tripod screen. Ideal for outdoor movie nights and presentations.', includes:['1080p projector, 3,500 lumens','100" tripod screen','HDMI cable and carry case']},
+  {id:'dslr', cat:'photography', name:'DSLR Camera', price:650, unit:'kit', deposit:325, stock:5, desc:'24MP DSLR with an 18–55mm kit lens, 64GB card and two batteries. Great for events, portraits and travel.', includes:['24MP body + 18–55mm lens','64GB SD card','2 batteries and charger','Padded camera bag']},
+  {id:'underwater', cat:'photography', name:'Underwater Camera', price:600, unit:'kit', deposit:300, stock:5, desc:'4K action camera in a 40m waterproof housing with a floating hand grip. Built for snorkeling and diving.', includes:['4K action camera','Waterproof housing (40m)','Floating hand grip','32GB card']},
+  {id:'reflector', cat:'photography', name:'Photography Reflector Set', price:150, unit:'set', deposit:75, stock:3, desc:'5-in-1 collapsible 110cm reflector with gold, silver, white, black and diffuser surfaces, plus a holder arm.', includes:['5-in-1 reflector, 110cm','Light stand with holder arm','Zip carry bag']},
+  {id:'tent', cat:'outdoor', name:'Camping Tent', price:350, unit:'tent', deposit:175, stock:5, desc:'Waterproof 4-person dome tent with rain fly and ground sheet. Sets up in about 10 minutes.', includes:['4-person dome tent','Rain fly and ground sheet','Stakes and guy lines']},
+  {id:'campchair', cat:'outdoor', name:'Folding Camping Chair', price:75, unit:'chair', deposit:38, stock:8, desc:'Lightweight steel-frame chair with cup holder and shoulder bag. Supports up to 120kg.', includes:['Cup holder armrest','Carry bag with strap','120kg capacity']},
+  {id:'camptable', cat:'outdoor', name:'Folding Camping Table', price:120, unit:'table', deposit:60, stock:5, desc:'Aluminum roll-top table that folds into a carry bag. Fits 4 people for meals at camp.', includes:['Aluminum roll-top','Adjustable legs','Carry bag']},
+  {id:'fins', cat:'beach', name:'Diving Fins (Pair)', price:150, unit:'pair', deposit:75, stock:5, desc:'Fins for snorkeling and recreational swimming. Sizes S to XL.', includes:['Sizes S–XL','Rinsed and sanitized']},
+  {id:'mask', cat:'beach', name:'Diving Mask', price:60, unit:'mask', deposit:30, stock:5, desc:'Tempered-glass mask with silicone skirt and a dry-top snorkel. Anti-fog treated before every rental.', includes:['Tempered-glass lens','Dry-top snorkel','Anti-fog treated']},
+  {id:'vest', cat:'beach', name:'Life Vest (Kids/Adults)', price:120, unit:'vest', deposit:60, stock:10, desc:'Coast-guard-style buoyancy vests with buckles and crotch strap. Available in kids (15–40kg) and adult sizes.', includes:['Kids and adult sizes','Buckle closure + crotch strap','Reflective tape']},
 ];
-const PRICING_VERSION = 4;
+const PRICING_VERSION = 5;
 
 /* ---------- equipment images ---------- */
 const EQUIPMENT_IMAGES = {
@@ -716,10 +716,7 @@ const EQUIPMENT_IMAGES = {
   tent:'assets/products/camping-tent-existing.webp',
   campchair:'assets/products/camping-chair.webp',
   camptable:'assets/products/camping-table.webp',
-  'fins-plastic':'assets/products/plastic-fins.webp',
-  'fins-carbon':'assets/products/carbon-fins-existing.webp',
-  'fins-ice':'assets/products/ice-fins-existing.webp',
-  'fins-short':'assets/products/short-fins.webp',
+  fins:'assets/products/short-fins.webp',
   mask:'assets/products/diving-mask.webp',
   vest:['assets/products/lifevest-kids.webp','assets/products/lifevest-adult.webp'],
 };
@@ -786,10 +783,10 @@ function seed(){
   ];
   const mk = (code,userId,lines,s,e,status,slot,pay,created) => ({code,userId,lines:lines.map(([itemId,qty])=>{const it=SEED_ITEMS.find(i=>i.id===itemId);return {itemId,qty,price:it.price,deposit:it.deposit}}),start:addDays(TODAY,s),end:addDays(TODAY,e),status,slot,pay,created:addDays(TODAY,created),notes:''});
   const reservations = [
-    mk('RH-24817','u1',[['sound',1],['chairs',80],['tables',10]],3,5,'confirmed','9:00 AM','shop',-4),
-    mk('RH-24822','u2',[['sound',2]],4,5,'pending','10:00 AM','gcash',-1),
-    mk('RH-24790','u3',[['tent',3],['campchair',6],['camptable',2]],0,2,'picked_up','8:00 AM','shop',-6),
-    mk('RH-24805','u4',[['mask',4],['fins-plastic',4],['vest',4],['underwater',1]],0,1,'confirmed','1:00 PM','gcash',-3),
+    mk('RH-24817','u1',[['sound',1],['chairs',30],['tables',6]],3,5,'confirmed','9:00 AM','shop',-4),
+    mk('RH-24822','u2',[['sound',1]],4,5,'pending','10:00 AM','gcash',-1),
+    mk('RH-24790','u3',[['tent',3],['campchair',6],['camptable',2]],0,2,'picked_up','9:00 AM','shop',-6),
+    mk('RH-24805','u4',[['underwater',1],['fins',2],['mask',2],['vest',2]],0,1,'confirmed','1:00 PM','gcash',-3),
     mk('RH-24761','u1',[['karaoke',1],['projector',1]],-14,-12,'returned','3:00 PM','shop',-20),
     mk('RH-24733','u2',[['dslr',1],['reflector',1]],-9,-8,'returned','10:00 AM','gcash',-15),
     mk('RH-24829','u3',[['projector',2],['boardgames',3]],7,8,'pending','2:00 PM','shop',0),
@@ -802,36 +799,23 @@ try { DB = JSON.parse(localStorage.getItem(KEY)) } catch(e) { DB = null }
 if(!DB || !DB.items) DB = seed();
 // When the price list changes, start again from fresh sample data (prototype only).
 if((DB.pricingVersion||0)<PRICING_VERSION) DB = seed();
-if(DB.period.start < TODAY) DB.period = {start:addDays(TODAY,1), end:addDays(TODAY,2)};
+setPeriod(DB.period.start, DB.period.end, true);
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)) }catch(e){} }
 
-const UI = {view:'home', cat:'all', q:'', checkout:null, lastCode:null, adminTab:'overview', resFilter:'all', resQ:'', authMode:'login', authNext:null, acctTab:'reservations', menu:false, sort:'popular', packageFin:'fins-plastic'};
+const UI = {view:'home', cat:'all', q:'', checkout:null, lastCode:null, adminTab:'overview', resFilter:'all', resQ:'', authMode:'login', authNext:null, acctTab:'reservations', menu:false, sort:'popular'};
 
 const item = id => DB.items.find(i=>i.id===id);
-const FIN_IDS = ['fins-plastic','fins-carbon','fins-ice','fins-short'];
-const packageAmounts = (pack, finId=UI.packageFin) => {
-  const baseFin=SEED_ITEMS.find(i=>i.id==='fins-plastic');
-  const selectedFin=item(finId)||baseFin;
-  const qty=pack.items.find(([id])=>id==='fins-plastic')?.[1]||0;
-  return {price:pack.price+qty*(selectedFin.price-baseFin.price),deposit:pack.deposit+qty*(selectedFin.deposit-baseFin.deposit)};
-};
-// The items in a package; the beach package's fins become the chosen fin type.
-const packageLines = (pack, finId=UI.packageFin) => pack.items.map(([id,qty])=>[id==='fins-plastic'?finId:id,qty]);
 // Finds complete packages inside the cart and returns how much cheaper each one is per day.
 function packageDiscounts(lines){
   const left={}; lines.forEach(l=>left[l.itemId]=(left[l.itemId]||0)+l.qty);
   const found=[];
   for(const pack of RENTAL_PACKAGES){
-    const fins=pack.items.some(([id])=>id==='fins-plastic')?FIN_IDS:[null];
-    for(const fin of fins){
-      const need=packageLines(pack,fin);
-      while(need.every(([id,qty])=>(left[id]||0)>=qty)){
-        need.forEach(([id,qty])=>left[id]-=qty);
-        const a=packageAmounts(pack,fin);
-        const rent=need.reduce((t,[id,qty])=>t+item(id).price*qty,0)-a.price;
-        const dep=need.reduce((t,[id,qty])=>t+item(id).deposit*qty,0)-a.deposit;
-        found.push({name:pack.name,rent:Math.max(0,rent),dep:Math.max(0,dep)});
-      }
+    const need=pack.items;
+    while(need.every(([id,qty])=>(left[id]||0)>=qty)){
+      need.forEach(([id,qty])=>left[id]-=qty);
+      const rent=need.reduce((t,[id,qty])=>t+item(id).price*qty,0)-pack.price;
+      const dep=need.reduce((t,[id,qty])=>t+item(id).deposit*qty,0)-pack.deposit;
+      found.push({name:pack.name,rent:Math.max(0,rent),dep:Math.max(0,dep)});
     }
   }
   return found;
@@ -907,7 +891,7 @@ function pageHome(){
   return `
   <section class="hero"><div class="wrap">
     <div>
-      <span class="hero-kicker"><b>Now open</b> General Santos City's equipment rental hub</span>
+      <span class="hero-kicker"><b>Opening May 17, 2027</b> General Santos City's equipment rental hub</span>
       <h1>Everything for the occasion, <span class="serif">ready when you are.</span></h1>
       <p class="lead">Event, entertainment, camera, camping and beach gear under one roof. Reserve online with live availability, then collect it at our counter, inspected and ready to go.</p>
       <form class="search-card" id="heroSearch">
@@ -923,7 +907,7 @@ function pageHome(){
       </div>
     </div>
     <div class="showcase">
-      <div class="seal"><img src="${LOGO}" alt="RentHub GenSan logo"></div>
+      <div class="seal"><img src="${LOGO}" alt="RentHub Gensan logo"></div>
       <div class="plinth p1">${art('dslr','photography')}<div><b>DSLR Camera</b><span>from <em>${from('dslr')}</em>/day</span></div></div>
       <div class="plinth p2">${art('sound','events')}<div><b>Sound System</b><span>from <em>${from('sound')}</em>/day</span></div></div>
       <div class="plinth p3">${art('tent','outdoor')}<div><b>Camping Tent</b><span>from <em>${from('tent')}</em>/day</span></div></div>
@@ -943,13 +927,13 @@ function pageHome(){
 
   <section class="section" style="padding-top:0"><div class="wrap">
     <div class="sec-head"><div><div class="eyebrow">Ready-made bundles</div><h2>Rental packages</h2><p>Curated gear bundles for your event, shoot or day out, with one clear daily rate and refundable deposit.</p></div></div>
-    <div class="package-grid">${RENTAL_PACKAGES.map(pack=>{const amounts=packageAmounts(pack);return `<article class="package-card">
-      <div><div class="eyebrow">${catName(pack.cat)}</div><h3>${pack.name}</h3></div>
-      <div><div class="package-price">${peso(amounts.price)} <small>/ day</small></div><div class="package-deposit"><span>Refundable deposit</span><b>${peso(amounts.deposit)}</b></div></div>
-      <ul class="package-includes">${pack.items.map(([id,qty])=>id==='fins-plastic'?`<li class="package-fin-choice"><label for="package-fin">Choose included fins · × ${qty}</label><select class="input" id="package-fin" data-package-fin aria-label="Choose fins included in the beach package">${['fins-plastic','fins-carbon','fins-ice','fins-short'].map(finId=>{const fin=item(finId);return `<option value="${finId}" ${UI.packageFin===finId?'selected':''}>${esc(fin.name)} · ${peso(fin.price)}/day · ${peso(fin.deposit)} deposit</option>`}).join('')}</select></li>`:`<li><span>${esc(item(id).name)}</span><b>× ${qty}</b></li>`).join('')}</ul>
+    <div class="package-grid">${RENTAL_PACKAGES.map(pack=>`<article class="package-card">
+      <div><div class="eyebrow">24-hour package</div><h3>${pack.name}</h3></div>
+      <div><div class="package-price">${peso(pack.price)} <small>/ day</small></div><div class="package-deposit"><span>Refundable deposit</span><b>${peso(pack.deposit)}</b></div></div>
+      <ul class="package-includes">${pack.items.map(([id,qty])=>`<li><span>${esc(item(id).name)}</span><b>× ${qty}</b></li>`).join('')}</ul>
       <button class="btn btn-primary" data-pack="${RENTAL_PACKAGES.indexOf(pack)}">Reserve Package</button>
-    </article>`}).join('')}</div>
-    <p class="package-note">The beach package includes four pairs of your selected fin type. Package totals update with that choice. The package price is applied automatically in your cart.</p>
+    </article>`).join('')}</div>
+    <p class="package-note">Each package covers a 24-hour rental period. The package price is applied automatically in your cart.</p>
   </div></section>
 
   <section class="section" style="padding-top:0"><div class="wrap">
@@ -977,7 +961,7 @@ function pageHome(){
   <section class="section"><div class="wrap">
     <div class="sec-head"><div><div class="eyebrow">From our renters</div><h2>Trusted for fiestas, debuts <span class="serif">and weekend trips</span></h2></div></div>
     <div class="testi">
-      <figure class="feature-quote" style="margin:0"><div class="stars" aria-label="5 stars">★★★★★</div><p>The sound system and 120 chairs were ready at 8 AM sharp. The counter team tested every mic with us before we left. It felt like dealing with an events company, not a rental shop.</p><footer><span class="avatar" style="background:#D9A229;color:#1A1405">LM</span><span><b>Liza M.</b><br>Debut party, Lagao</span></footer></figure>
+      <figure class="feature-quote" style="margin:0"><div class="stars" aria-label="5 stars">★★★★★</div><p>The sound system and 30 chairs were ready at 9 AM sharp. The counter team tested every mic with us before we left. It felt like dealing with an events company, not a rental shop.</p><footer><span class="avatar" style="background:#D9A229;color:#1A1405">LM</span><span><b>Liza M.</b><br>Debut party, Lagao</span></footer></figure>
       <div class="side-quotes">
         ${[['Two tents and the camping table for Lake Sebu. Clean, complete, and the deposit came back the same day.','Carlo D.','Family camping trip'],
            ['Underwater camera plus masks for the whole barkada. Booking online meant zero waiting at the shop.','Jessa T.','Island hopping, Sarangani']].map(([q,n,w])=>`<figure class="quote" style="margin:0"><div class="stars" aria-label="5 stars">★★★★★</div><p>${q}</p><footer><span class="avatar">${initials(n)}</span><span><b style="color:var(--ink)">${n}</b><br>${w}</span></footer></figure>`).join('')}
@@ -1003,16 +987,17 @@ function pickupBand(){
     <div><div class="eyebrow">Pickup &amp; rental policies</div><h2 style="margin-top:8px">Shop pickup only</h2>
       <ul class="policy-list">
         <li>${I.store}<span><b style="color:#fff">Shop pickup only:</b> All reservations must be collected at our physical shop. No delivery or shipping is available.</span></li>
+        <li>${I.cal}<span><b style="color:#fff">Rental period:</b> Each rental day is a 24-hour period from your pickup time. Short-term rentals run up to 6 days, and long-term rentals run 7 days and above.</span></li>
         <li>${I.id}<span><b style="color:#fff">Valid government-issued ID:</b> Customers must present a valid ID and sign a rental agreement before equipment release. The ID holder must match the reservation account name.</span></li>
         <li>${I.shield}<span><b style="color:#fff">Refundable security deposit:</b> A deposit equal to 50% of the rental fee is required for individual equipment and packages. It will be refunded after inspection, minus any applicable deductions.</span></li>
         <li>${I.cal}<span><b style="color:#fff">Late-return charges:</b> Delays up to 1 hour incur a 5% penalty. Delays exceeding 1 hour up to 2 hours incur a total 10% penalty. Delays exceeding 2 hours incur one full additional day's rental fee, with another daily charge for each succeeding 24-hour period.</span></li>
         <li>${I.box}<span><b style="color:#fff">Damage or loss:</b> Customers are responsible for documented repair or replacement costs that exceed their security deposit.</span></li>
         <li>${I.box}<span><b style="color:#fff">Equipment inspection:</b> Customers must inspect the equipment with staff at pickup and return it in good condition.</span></li>
       </ul></div>
-    <div class="shop-card"><h3>RentHub GenSan Pickup Counter</h3>
-      <p>Pioneer Avenue, Dadiangas West<br>General Santos City, South Cotabato 9500</p>
-      <dl class="hours"><dt>Mon – Sat</dt><dd>8:00 AM – 6:00 PM</dd><dt>Sunday</dt><dd>9:00 AM – 3:00 PM</dd><dt>Phone</dt><dd>09920372031</dd><dt>Email</dt><dd>hello@renthubgensan.ph</dd></dl>
-      <p style="font-size:12.5px;color:#9FB2CF">Address and contact details are placeholders for this preview.</p>
+    <div class="shop-card"><h3>RentHub Gensan Pickup Counter</h3>
+      <p>Pan-Philippine National Highway, Barangay City Heights<br>General Santos City, South Cotabato 9500</p>
+      <dl class="hours"><dt>Mon – Sat</dt><dd>9:00 AM – 5:00 PM</dd><dt>Sunday</dt><dd>Closed</dd><dt>Phone</dt><dd>09920372031</dd><dt>Email</dt><dd>hello@renthubgensan.ph</dd></dl>
+      <p style="font-size:12.5px;color:#9FB2CF">Phone and email are placeholders for this preview.</p>
     </div>
   </div></section>`;
 }
@@ -1035,7 +1020,7 @@ function pageCatalog(){
   return `<div class="page-head"><div class="wrap"><div class="crumbs">Home / Equipment${UI.cat!=='all'?' / '+catName(UI.cat):''}</div><h1>${UI.cat==='all'?'All equipment':catName(UI.cat)}</h1></div></div>
   <div class="wrap catalog">
     <aside class="filters">
-      <div><h4>Rental period</h4><div style="margin-top:8px;display:grid;gap:10px">${periodFields('cf')}<div class="period-note num"><b>${d} day${d>1?'s':''}</b> · ${fmtShort(DB.period.start)} to ${fmtShort(DB.period.end)}<br><span class="muted">Availability below is for these dates.</span></div></div></div>
+      <div><h4>Rental period</h4><div style="margin-top:8px;display:grid;gap:10px">${periodFields('cf')}<div class="period-note num"><b>${d} day${d>1?'s':''}</b> · ${fmtShort(DB.period.start)} to ${fmtShort(DB.period.end)}<br>${rentalTerm(d)}<br><span class="muted">Availability below is for these dates.</span></div></div></div>
       <div><h4>Search</h4><input class="input" id="q" placeholder="Search equipment" value="${esc(UI.q)}" style="margin-top:8px"></div>
       <div><h4>Category</h4><div class="cat-list" style="margin-top:6px">
         <button data-cat-set="all" class="${UI.cat==='all'?'on':''}">All equipment <span>${DB.items.length}</span></button>
@@ -1077,7 +1062,7 @@ function itemModal(id){
   };
 }
 function addPackage(pack){
-  for(const [id,qty] of packageLines(pack)){
+  for(const [id,qty] of pack.items){
     const ex=DB.cart.find(l=>l.itemId===id); if(ex) ex.qty+=qty; else DB.cart.push({itemId:id,qty,note:''});
   }
   save(); go('cart'); toast(`${pack.name} package added to your cart`);
@@ -1096,7 +1081,7 @@ function pageCart(){
   return `<div class="page-head"><div class="wrap"><div class="crumbs">Home / Cart</div><h1>Your cart</h1></div></div>
   <div class="wrap layout-2">
     <div class="stack">
-      <div class="panel"><div class="panel-h"><h3>Rental period</h3><span class="muted num">${t.d} day${t.d>1?'s':''} · all items share these dates</span></div><div class="panel-b">${periodFields('cp')}</div></div>
+      <div class="panel"><div class="panel-h"><h3>Rental period</h3><span class="muted num">${t.d} day${t.d>1?'s':''} · ${rentalTerm(t.d)} · all items share these dates</span></div><div class="panel-b">${periodFields('cp')}</div></div>
       ${cf.length?`<div class="notice bad">${I.info}<span><b>Some items aren't available for these dates.</b> ${cf.map(c=>`${esc(item(c.id).name)}: you need ${c.need}, only ${c.have} free`).join('; ')}. Lower the quantity or change dates.</span></div>`:''}
       <div class="panel"><div class="panel-h"><h3>Equipment</h3><button class="link-btn" data-go="catalog">Add more items</button></div>
         ${DB.cart.map((l,i)=>{const it=item(l.itemId);const a=available(it.id,DB.period.start,DB.period.end);const bad=a<l.qty;return `<div class="line">${art(it.id,it.cat)}<div style="min-width:0"><h4>${esc(it.name)}</h4><div class="line-meta num">Daily Rental Rate: ${peso(it.price)} / ${esc(it.unit)} / day · Refundable Security Deposit: ${peso(it.deposit)} / ${esc(it.unit)}${l.note?` · Sizes: ${esc(l.note)}`:''}</div><div style="margin-top:6px">${bad?`<span class="pill bad">${a} free for these dates</span>`:`<span class="pill ok">Available</span>`}</div></div>
@@ -1109,21 +1094,21 @@ function pageCart(){
       <div class="sum-row"><span>Refundable Security Deposit</span><b>${peso(t.dep)}</b></div>
       <div class="sum-row"><span>Delivery</span><span class="muted">Not offered · pickup only</span></div>
       <div class="sum-row total"><span>Total Amount Due</span><span>${peso(t.rent+t.dep)}</span></div>
-      <div class="notice gold" style="margin-top:14px">${I.store}<span>Pick up on <b>${fmt(DB.period.start)}</b> and return by <b>${fmt(DB.period.end)}</b>, 6:00 PM, at our General Santos City shop.</span></div>
+      <div class="notice gold" style="margin-top:14px">${I.store}<span>Pick up on <b>${fmt(DB.period.start)}</b> and return on <b>${fmt(DB.period.end)}</b> by the same time as your pickup, at our General Santos City shop.</span></div>
       <button class="btn btn-primary" style="width:100%;margin-top:14px" id="toCheckout" ${cf.length?'disabled':''}>Continue to checkout</button>
       ${me()?'':'<p class="muted" style="font-size:13px;text-align:center;margin-top:8px">You will be asked to log in or create an account.</p>'}
     </div></aside>
   </div>`;
 }
-const SLOTS=['8:00 AM','9:00 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM'];
-function slotsFor(day){ return fmtDow(day)==='Sun' ? SLOTS.filter(s=>['9:00 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM'].includes(s)) : SLOTS; }
+// The shop is open Mon–Sat, 9:00 AM – 5:00 PM, so the last pickup slot is 4:00 PM.
+const SLOTS=['9:00 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM','3:00 PM','4:00 PM'];
 function pageCheckout(){
-  const u=me(); const t=cartTotals(); const c=UI.checkout||(UI.checkout={slot:slotsFor(DB.period.start)[0],pay:'shop',phone:u.phone,notes:'',agree:false});
+  const u=me(); const t=cartTotals(); const c=UI.checkout||(UI.checkout={slot:SLOTS[0],pay:'shop',phone:u.phone,notes:'',agree:false});
   return `<div class="page-head"><div class="wrap"><div class="crumbs">Cart / Checkout</div><h1>Reserve for pickup</h1></div></div>
   <div class="wrap layout-2"><form class="stack" id="coForm">
     <div class="panel"><div class="panel-h"><h3>Pickup time on ${fmt(DB.period.start)}</h3></div><div class="panel-b">
-      <div class="slots">${slotsFor(DB.period.start).map(s=>`<button type="button" class="slot ${c.slot===s?'on':''}" data-slot="${s}">${s}</button>`).join('')}</div>
-      <p class="muted" style="font-size:13px;margin-top:10px">Return by 6:00 PM on ${fmt(DB.period.end)} (3:00 PM on Sundays).</p></div></div>
+      <div class="slots">${SLOTS.map(s=>`<button type="button" class="slot ${c.slot===s?'on':''}" data-slot="${s}">${s}</button>`).join('')}</div>
+      <p class="muted" style="font-size:13px;margin-top:10px">Return on ${fmt(DB.period.end)} by the same time as your pickup slot. Each rental day is a 24-hour period.</p></div></div>
     <div class="panel"><div class="panel-h"><h3>Renter details</h3></div><div class="panel-b stack">
       <div class="two"><div class="field"><label for="co-name">Full name (must match your ID)</label><input class="input" id="co-name" value="${esc(u.name)}" readonly></div><div class="field"><label for="co-phone">Mobile number</label><input class="input" id="co-phone" value="${esc(c.phone)}" required></div></div>
       <div class="field"><label for="co-notes">Notes for the counter (optional)</label><textarea class="input" id="co-notes" rows="2" placeholder="e.g. We'll bring a pickup truck for the chairs">${esc(c.notes)}</textarea></div>
@@ -1168,7 +1153,7 @@ function pageConfirm(){
     <p class="muted">Your units are on hold. We'll confirm by SMS within the hour during shop hours.</p>
     <div class="code-big">${r.code}</div><p class="muted" style="font-size:13px">Show this code at the counter</p></div>
     <div class="panel-b" style="border-top:1px solid var(--line)"><div class="kv">
-      <div><small>Pickup</small><b>${fmt(r.start)} · ${r.slot}</b></div><div><small>Return by</small><b>${fmt(r.end)} · 6:00 PM</b></div>
+      <div><small>Pickup</small><b>${fmt(r.start)} · ${r.slot}</b></div><div><small>Return by</small><b>${fmt(r.end)} · ${r.slot}</b></div>
       <div><small>Rental subtotal</small><b>${peso(resRentalSubtotal(r))}</b></div><div><small>Refundable Security Deposit</small><b>${peso(resDeposit(r))}</b></div><div><small>Total Amount Due</small><b>${peso(resTotal(r))}</b></div></div>
       <div class="notice gold" style="margin-top:14px">${I.id}<span>Bring a valid government ID under <b>${esc(user(r.userId).name)}</b>. Pickup is at our General Santos City shop only.</span></div>
       <div class="row" style="justify-content:center;margin-top:18px"><button class="btn btn-primary" data-go="account">Track my reservations</button><button class="btn btn-ghost" data-go="catalog">Keep browsing</button></div>
@@ -1186,6 +1171,7 @@ function pageAuth(){
       <div class="field"><label for="a-email">Email</label><input class="input" id="a-email" type="email" autocomplete="email" required></div>
       <div class="field"><label for="a-pass">Password</label><input class="input" id="a-pass" type="password" autocomplete="${reg?'new-password':'current-password'}" required></div>
       ${reg?`<div class="field"><label for="a-pass2">Confirm password</label><input class="input" id="a-pass2" type="password" autocomplete="new-password" required></div>`:''}
+      ${reg?'<p class="muted" style="font-size:12.5px">We use your name, mobile number and ID details only to process your rentals, in line with the Data Privacy Act of 2012 (RA 10173).</p>':''}
       <p class="err" id="aErr" hidden></p>
       <button class="btn btn-primary" type="submit">${reg?'Create account':'Log in'}</button>
       ${!reg?`<div class="demo-acc"><b>Preview accounts</b><button type="button" class="link-btn" data-demo="juan@example.com|demo123">Customer · juan@example.com / demo123</button><button type="button" class="link-btn" data-demo="admin@renthubgensan.ph|admin123">Admin · admin@renthubgensan.ph / admin123</button></div>`:''}
@@ -1216,7 +1202,7 @@ function resCard(r, admin){
   const canCancel=['pending','confirmed'].includes(r.status) && r.start>TODAY;
   return `<article class="res-card">
     <div class="res-top"><div class="row"><span class="code">${r.code}</span>${statusPill(r.status)}</div>
-      <div class="res-dates num"><span><b>Pickup</b>${fmt(r.start)} · ${r.slot}</span><span><b>Return</b>${fmt(r.end)}</span><span><b>Rental subtotal</b>${peso(resRentalSubtotal(r))}</span><span><b>Refundable Security Deposit</b>${peso(resDeposit(r))}</span><span><b>Total Amount Due</b>${peso(resTotal(r))}</span></div></div>
+      <div class="res-dates num"><span><b>Pickup</b>${fmt(r.start)} · ${r.slot}</span><span><b>Return by</b>${fmt(r.end)} · ${r.slot}</span><span><b>Rental subtotal</b>${peso(resRentalSubtotal(r))}</span><span><b>Refundable Security Deposit</b>${peso(resDeposit(r))}</span><span><b>Total Amount Due</b>${peso(resTotal(r))}</span>${r.checkin?`<span><b>${r.checkin.owed?'Balance owed':'Deposit refunded'}</b>${peso(r.checkin.owed||r.checkin.refund)}</span>`:''}</div></div>
     <div class="res-items">${r.lines.map(l=>{const it=item(l.itemId)||{name:'Removed item',cat:'events',id:''};return `<span class="res-item">${art(it.id,it.cat)}${l.qty} × ${esc(it.name)}</span>`}).join('')}</div>
     ${r.status!=='cancelled'?`<div class="timeline">${steps.map((s,i)=>`<div class="tl ${i<idx||(i===idx&&r.status==='returned')?'done':i===idx?'cur':''}"><i></i>${s[1]}</div>`).join('')}</div>`:''}
     ${canCancel?`<div class="res-actions"><span class="muted" style="font-size:13px;margin-right:auto">Free cancellation until the day before pickup</span><button class="btn btn-danger btn-sm" data-cancel="${r.code}">Cancel reservation</button></div>`:''}
@@ -1288,7 +1274,7 @@ function adminReservations(){
     <input class="input" id="resQ" placeholder="Search code or customer" value="${esc(UI.resQ)}" style="max-width:260px"></div>
   <div class="panel tbl-wrap"><table><thead><tr><th>Code</th><th>Customer</th><th>Items</th><th>Pickup → Return</th><th class="num">Total Amount Due</th><th>Status</th><th>Actions</th></tr></thead><tbody>
   ${list.map(r=>{const u=user(r.userId);const next={pending:[['confirmed','Confirm','btn-primary']],confirmed:[['picked_up','Release','btn-gold']],picked_up:[['returned','Check in','btn-ghost']],returned:[],cancelled:[['pending','Restore','btn-ghost']]}[r.status];
-    return `<tr><td class="mono" style="font-weight:600">${r.code}</td><td><b>${esc(u.name)}</b><div class="muted" style="font-size:12.5px">${esc(u.phone)}</div></td><td style="min-width:200px">${r.lines.map(l=>`${l.qty}× ${esc(item(l.itemId)?.name||'—')}`).join('<br>')}</td><td class="num" style="white-space:nowrap">${fmtShort(r.start)} → ${fmtShort(r.end)}<div class="muted" style="font-size:12.5px">${r.slot} · ${r.pay==='gcash'?'GCash 20%':'Pay at shop'}</div></td><td class="num">${peso(resTotal(r))}<div class="muted" style="font-size:12px">Rental: ${peso(resRentalSubtotal(r))}<br>Refundable Security Deposit: ${peso(resDeposit(r))}</div></td><td>${statusPill(r.status)}</td>
+    return `<tr><td class="mono" style="font-weight:600">${r.code}</td><td><b>${esc(u.name)}</b><div class="muted" style="font-size:12.5px">${esc(u.phone)}</div></td><td style="min-width:200px">${r.lines.map(l=>`${l.qty}× ${esc(item(l.itemId)?.name||'—')}`).join('<br>')}</td><td class="num" style="white-space:nowrap">${fmtShort(r.start)} → ${fmtShort(r.end)}<div class="muted" style="font-size:12.5px">${r.slot} · ${r.pay==='gcash'?'GCash 20%':'Pay at shop'}</div></td><td class="num">${peso(resTotal(r))}<div class="muted" style="font-size:12px">Rental: ${peso(resRentalSubtotal(r))}<br>Refundable Security Deposit: ${peso(resDeposit(r))}</div></td><td>${statusPill(r.status)}${resRecord(r)?`<div class="muted" style="font-size:12px;margin-top:4px">${resRecord(r)}</div>`:''}</td>
     <td><div class="row" style="flex-wrap:nowrap">${next.map(([s,l,c])=>`<button class="btn ${c} btn-sm" data-st="${r.code}|${s}">${l}</button>`).join('')}${['pending','confirmed'].includes(r.status)?`<button class="btn btn-danger btn-sm" data-st="${r.code}|cancelled">Cancel</button>`:''}</div></td></tr>`}).join('')||'<tr><td colspan="7" class="muted" style="text-align:center;padding:32px">No reservations match.</td></tr>'}
   </tbody></table></div>`;
 }
@@ -1298,9 +1284,53 @@ function setStatus(code, s){
     const cf=conflicts(r.lines,r.start,r.end,r.code);
     if(cf.length){ toast(`Can't restore ${code}: ${cf.map(c=>`${item(c.id).name} has only ${c.have} free`).join(', ')}. Double booking blocked.`,true); return; }
   }
+  if(s==='picked_up') return releaseModal(r);
+  if(s==='returned') return checkInModal(r);
   const apply=()=>{ r.status=s; save(); render(); toast(`${code} marked ${STATUS[s][0].toLowerCase()}`); };
   if(s==='cancelled') confirmBox(`Cancel ${code}?`,'The held units will be released and become bookable by other customers.','Cancel reservation',apply,true); else apply();
 }
+const slotMins = s => { const [t,ap]=s.split(' '); let [h,m]=t.split(':').map(Number); if(ap==='PM'&&h!==12) h+=12; return h*60+m; };
+// Late-return charges: 5% up to 1 hour late, 10% up to 2 hours, then one full day's fee per started 24 hours.
+const lateCharge = (mins, dailyFee) => mins<=0 ? 0 : mins<=60 ? dailyFee*.05 : mins<=120 ? dailyFee*.10 : dailyFee*Math.ceil(mins/1440);
+function releaseModal(r){
+  const checks=[['ID','Valid government-issued ID checked; the name matches '+user(r.userId).name],['agreement','Rental agreement signed'],['paid','Rental payment and security deposit collected, receipt issued'],['inspected','Equipment checked for cleanliness, function and completeness, recorded on the inspection checklist']];
+  openModal(`<form id="relForm" class="panel-b stack" style="padding:28px"><h3 style="font-size:22px;padding-right:40px">Release ${r.code}</h3>
+    <div class="field"><label for="rel-id">ID presented</label><input class="input" id="rel-id" placeholder="e.g. Driver's license, PhilSys ID" required></div>
+    ${checks.map(([k,l])=>`<label class="toggle"><input type="checkbox" data-rel="${k}"> ${esc(l)}</label>`).join('')}
+    <p class="err" id="relErr" hidden></p>
+    <div class="row" style="justify-content:flex-end"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-gold" type="submit">Release equipment</button></div></form>`,'sm');
+  $('#relForm').onsubmit=e=>{ e.preventDefault();
+    const id=$('#rel-id').value.trim(), err=$('#relErr');
+    if(!id){ err.textContent='Enter the ID the customer presented.'; err.hidden=false; return; }
+    if([...document.querySelectorAll('[data-rel]')].some(c=>!c.checked)){ err.textContent='Complete every release step before handing over the equipment.'; err.hidden=false; return; }
+    r.status='picked_up'; r.release={id,date:TODAY}; save(); closeModal(); render(); toast(`${r.code} released to ${user(r.userId).name}`);
+  };
+}
+function checkInModal(r){
+  const days=rentalDays(r.start,r.end), dailyFee=resRentalSubtotal(r)/days, deposit=resDeposit(r);
+  const now=new Date(), time=pad(now.getHours())+':'+pad(now.getMinutes());
+  openModal(`<form id="ciForm" class="panel-b stack" style="padding:28px"><h3 style="font-size:22px;padding-right:40px">Check in ${r.code}</h3>
+    <p class="muted" style="font-size:13px">Due back ${fmt(r.end)} · ${r.slot}. Compare the equipment with its pre-release inspection record.</p>
+    <div class="two"><div class="field"><label for="ci-date">Returned on</label><input class="input" type="date" id="ci-date" min="${r.start}" value="${TODAY}"></div><div class="field"><label for="ci-time">Time returned</label><input class="input" type="time" id="ci-time" value="${time}"></div></div>
+    <div class="field"><label for="ci-dmg">Documented damage or loss charges (₱)</label><input class="input" type="number" id="ci-dmg" min="0" value="0"></div>
+    <div class="field"><label for="ci-notes">Inspection notes</label><textarea class="input" id="ci-notes" rows="2" placeholder="Condition, missing accessories"></textarea></div>
+    <div class="panel-b" id="ciSum" style="background:var(--surface-2);border-radius:12px"></div>
+    <div class="row" style="justify-content:flex-end"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-primary" type="submit">Complete check-in</button></div></form>`,'sm');
+  const calc=()=>{
+    const [h,m]=($('#ci-time').value||'00:00').split(':').map(Number);
+    const lateMins=daysBetween(r.end,$('#ci-date').value||TODAY)*1440+h*60+m-slotMins(r.slot);
+    const late=Math.round(lateCharge(lateMins,dailyFee)), damage=Math.max(0,Math.round(+$('#ci-dmg').value||0));
+    return {lateMins:Math.max(0,lateMins),late,damage,refund:Math.max(0,deposit-late-damage),owed:Math.max(0,late+damage-deposit)};
+  };
+  const upd=()=>{ const c=calc(); $('#ciSum').innerHTML=`<div class="sum-row"><span>Late by</span><b>${c.lateMins?`${Math.floor(c.lateMins/60)}h ${c.lateMins%60}m`:'On time'}</b></div><div class="sum-row"><span>Late-return charge</span><b>${peso(c.late)}</b></div><div class="sum-row"><span>Damage or loss</span><b>${peso(c.damage)}</b></div><div class="sum-row"><span>Security deposit held</span><b>${peso(deposit)}</b></div><div class="sum-row total"><span>${c.owed?'Customer still owes':'Deposit to refund'}</span><span>${peso(c.owed||c.refund)}</span></div>`; };
+  upd(); ['#ci-date','#ci-time','#ci-dmg'].forEach(s=>$(s).oninput=upd);
+  $('#ciForm').onsubmit=e=>{ e.preventDefault();
+    r.status='returned'; r.checkin={...calc(),date:$('#ci-date').value||TODAY,time:$('#ci-time').value,notes:$('#ci-notes').value.trim()};
+    save(); closeModal(); render(); toast(`${r.code} checked in`);
+  };
+}
+// Short summary of the release and return records, for reservation lists.
+const resRecord = r => [r.release?`ID: ${esc(r.release.id)}`:'', r.checkin?(r.checkin.owed?`Owes ${peso(r.checkin.owed)}`:`Deposit refund ${peso(r.checkin.refund)}`)+(r.checkin.late+r.checkin.damage?` · Charges ${peso(r.checkin.late+r.checkin.damage)}`:''):''].filter(Boolean).join('<br>');
 function adminEquipment(){
   return `<div class="row" style="justify-content:space-between"><div><div class="eyebrow">Catalog</div><h1 style="margin-top:4px">Equipment & inventory</h1></div><button class="btn btn-primary" id="addItem">${I.plus} Add equipment</button></div>
   <div class="panel tbl-wrap"><table><thead><tr><th>Item</th><th>Category</th><th class="num">Daily Rental Rate</th><th class="num">Refundable Security Deposit</th><th class="num">Stock</th><th class="num">Booked today</th><th>Status</th><th></th></tr></thead><tbody>
@@ -1349,8 +1379,8 @@ function footer(){
     <div style="display:grid;gap:12px;align-content:start"><div class="brand"><img src="${LOGO}" alt=""><span><b>Rent<span>Hub</span></b><small>GENSAN</small></span></div><p class="muted" style="font-size:14px;max-width:36ch">Rent what you need, the smarter choice indeed. Event, entertainment, photography, camping and beach gear in General Santos City.</p></div>
     <div><h4>Equipment</h4><ul>${CATS.map(c=>`<li><button data-cat-go="${c.id}">${c.name}</button></li>`).join('')}</ul></div>
     <div><h4>Renting</h4><ul><li><button data-go="how">How it works</button></li><li><button data-go="how">Pickup policy</button></li><li><button data-go="cart">Your cart</button></li><li><button data-go="account">My reservations</button></li></ul></div>
-    <div><h4>Visit us</h4><ul><li>Pioneer Avenue, Dadiangas West</li><li>General Santos City 9500</li><li>Mon–Sat 8 AM – 6 PM</li><li>Sun 9 AM – 3 PM</li></ul></div>
-  </div><div class="foot-bottom"><div class="wrap"><span>© 2026 RentHub GenSan. All rights reserved.</span><span>Pickup only · No delivery or shipping</span></div></div></footer>`;
+    <div><h4>Visit us</h4><ul><li>Pan-Philippine National Highway</li><li>Barangay City Heights</li><li>General Santos City 9500</li><li>Mon–Sat 9 AM – 5 PM</li><li>Closed Sundays</li></ul></div>
+  </div><div class="foot-bottom"><div class="wrap"><span>© 2026 RentHub Gensan. All rights reserved. Personal information is handled in line with the Data Privacy Act of 2012 (RA 10173).</span><span>Pickup only · No delivery or shipping</span></div></div></footer>`;
 }
 function render(){
   const u=me();
@@ -1376,13 +1406,16 @@ function bind(){
   const pf=$('#profForm'); if(pf) pf.onsubmit=e=>{e.preventDefault(); const u=me(); u.name=$('#p-name').value.trim()||u.name; u.phone=$('#p-phone').value.trim()||u.phone; save(); render(); toast('Profile saved');};
   const rq=$('#resQ'); if(rq) rq.oninput=()=>{UI.resQ=rq.value; const p=rq.selectionStart; render(); const n=$('#resQ'); n.focus(); n.setSelectionRange(p,p);};
   const ai=$('#addItem'); if(ai) ai.onclick=()=>editItem(null);
-  document.querySelectorAll('[data-package-fin]').forEach(select=>select.onchange=()=>{UI.packageFin=select.value;render();});
 }
 function setPeriod(start,end,quiet){
   if(!start) start=DB.period.start; if(!end) end=DB.period.end;
   if(start<TODAY){ start=TODAY; if(!quiet) toast('Pickup date can\'t be in the past.',true); }
-  if(end<start){ end=addDays(start,1); if(!quiet) toast('Return date moved to the day after pickup.'); }
-  if(daysBetween(start,end)>30){ end=addDays(start,30); toast('Online reservations are limited to 30 days. Call us for longer rentals.'); }
+  // The shop is closed on Sundays, so no pickups or returns that day.
+  if(isSunday(start)){ start=addDays(start,1); if(!quiet) toast('We\'re closed on Sundays. Pickup moved to Monday.'); }
+  // Each rental day is a 24-hour period, so the return is at least a day after pickup.
+  if(end<=start){ end=addDays(start,1); if(!quiet) toast('Return date moved to the day after pickup.'); }
+  if(isSunday(end)){ end=addDays(end,1); if(!quiet) toast('We\'re closed on Sundays. Return moved to Monday.'); }
+  if(daysBetween(start,end)>30){ end=addDays(start,isSunday(addDays(start,30))?29:30); toast('Online reservations are limited to 30 days. Call us for longer rentals.'); }
   DB.period={start,end}; save();
 }
 
