@@ -682,6 +682,8 @@ const RENTAL_PACKAGES = [
   {name:'Outdoor and Camping',cat:'outdoor',price:550,deposit:275,items:[['tent',1],['campchair',2],['camptable',1]]},
   {name:'Beach and Water Activities',cat:'beach',price:1130,deposit:565,items:[['underwater',1],['fins',2],['mask',2],['vest',2]]},
 ];
+// A package as booked: its name, price, deposit and contents at the time of booking.
+const packSnapshot = (i,qty) => { const p=RENTAL_PACKAGES[i]; return {name:p.name,cat:p.cat,qty,price:p.price,deposit:p.deposit,items:p.items.map(([id,q])=>[id,q])}; };
 // Rates follow Table 5 and stock follows Table 22 of the feasibility study.
 const SEED_ITEMS = [
   {id:'chairs', cat:'events', name:'Event Chair', price:15, unit:'chair', deposit:8, stock:40, desc:'White resin monoblock chairs. Stackable, easy to transport in a pickup or van.', includes:['Wiped and sanitized before release','Stack of 10 per bundle']},
@@ -700,7 +702,7 @@ const SEED_ITEMS = [
   {id:'mask', cat:'beach', name:'Diving Mask', price:60, unit:'mask', deposit:30, stock:5, desc:'Tempered-glass mask with silicone skirt and a dry-top snorkel. Anti-fog treated before every rental.', includes:['Tempered-glass lens','Dry-top snorkel','Anti-fog treated']},
   {id:'vest', cat:'beach', name:'Life Vest (Kids/Adults)', price:120, unit:'vest', deposit:60, stock:10, desc:'Coast-guard-style buoyancy vests with buckles and crotch strap. Available in kids (15–40kg) and adult sizes.', includes:['Kids and adult sizes','Buckle closure + crotch strap','Reflective tape']},
 ];
-const PRICING_VERSION = 5;
+const PRICING_VERSION = 6;
 
 /* ---------- equipment images ---------- */
 const EQUIPMENT_IMAGES = {
@@ -781,22 +783,23 @@ function seed(){
     {id:'u3', name:'Paolo Reyes', email:'paolo.r@example.com', pass:'demo123', phone:'0927 410 8833', role:'customer', joined:addDays(TODAY,-30)},
     {id:'u4', name:'Aileen Villanueva', email:'aileen.v@example.com', pass:'demo123', phone:'0995 118 2207', role:'customer', joined:addDays(TODAY,-12)},
   ];
-  const mk = (code,userId,lines,s,e,status,slot,pay,created) => ({code,userId,lines:lines.map(([itemId,qty])=>{const it=SEED_ITEMS.find(i=>i.id===itemId);return {itemId,qty,price:it.price,deposit:it.deposit}}),start:addDays(TODAY,s),end:addDays(TODAY,e),status,slot,pay,created:addDays(TODAY,created),notes:''});
+  const mk = (code,userId,lines,s,e,status,slot,pay,created,packs=[]) => ({code,userId,lines:lines.map(([itemId,qty])=>{const it=SEED_ITEMS.find(i=>i.id===itemId);return {itemId,qty,price:it.price,deposit:it.deposit}}),packs:packs.map(([i,qty])=>packSnapshot(i,qty)),start:addDays(TODAY,s),end:addDays(TODAY,e),status,slot,pay,created:addDays(TODAY,created),notes:''});
   const reservations = [
     mk('RH-24817','u1',[['sound',1],['chairs',30],['tables',6]],3,5,'confirmed','9:00 AM','shop',-4),
     mk('RH-24822','u2',[['sound',1]],4,5,'pending','10:00 AM','gcash',-1),
     mk('RH-24790','u3',[['tent',3],['campchair',6],['camptable',2]],0,2,'picked_up','9:00 AM','shop',-6),
-    mk('RH-24805','u4',[['underwater',1],['fins',2],['mask',2],['vest',2]],0,1,'confirmed','1:00 PM','gcash',-3),
+    mk('RH-24805','u4',[],0,1,'confirmed','1:00 PM','gcash',-3,[[4,1]]),
     mk('RH-24761','u1',[['karaoke',1],['projector',1]],-14,-12,'returned','3:00 PM','shop',-20),
-    mk('RH-24733','u2',[['dslr',1],['reflector',1]],-9,-8,'returned','10:00 AM','gcash',-15),
+    mk('RH-24733','u2',[],-9,-8,'returned','10:00 AM','gcash',-15,[[2,1]]),
     mk('RH-24829','u3',[['projector',2],['boardgames',3]],7,8,'pending','2:00 PM','shop',0),
     mk('RH-24701','u4',[['tables',4]],-5,-4,'cancelled','9:00 AM','shop',-10),
   ];
-  return {items:SEED_ITEMS.map(i=>({...i,status:'active'})), users, reservations, session:null, cart:[], period:{start:addDays(TODAY,1), end:addDays(TODAY,2)}, pricingVersion:PRICING_VERSION};
+  return {items:SEED_ITEMS.map(i=>({...i,status:'active'})), users, reservations, session:null, cart:[], cartPacks:[], period:{start:addDays(TODAY,1), end:addDays(TODAY,2)}, pricingVersion:PRICING_VERSION};
 }
 let DB;
 try { DB = JSON.parse(localStorage.getItem(KEY)) } catch(e) { DB = null }
 if(!DB || !DB.items) DB = seed();
+DB.cartPacks=DB.cartPacks||[];
 // When the price list changes, start again from fresh sample data (prototype only).
 if((DB.pricingVersion||0)<PRICING_VERSION) DB = seed();
 setPeriod(DB.period.start, DB.period.end, true);
@@ -805,29 +808,39 @@ function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)) }catch(e){} 
 const UI = {view:'home', cat:'all', q:'', checkout:null, lastCode:null, adminTab:'overview', resFilter:'all', resQ:'', authMode:'login', authNext:null, acctTab:'reservations', menu:false, sort:'popular'};
 
 const item = id => DB.items.find(i=>i.id===id);
-// Finds complete packages inside the cart and returns how much cheaper each one is per day.
-function packageDiscounts(lines){
-  const left={}; lines.forEach(l=>left[l.itemId]=(left[l.itemId]||0)+l.qty);
-  const found=[];
-  for(const pack of RENTAL_PACKAGES){
-    const need=pack.items;
-    while(need.every(([id,qty])=>(left[id]||0)>=qty)){
-      need.forEach(([id,qty])=>left[id]-=qty);
-      const rent=need.reduce((t,[id,qty])=>t+item(id).price*qty,0)-pack.price;
-      const dep=need.reduce((t,[id,qty])=>t+item(id).deposit*qty,0)-pack.deposit;
-      found.push({name:pack.name,rent:Math.max(0,rent),dep:Math.max(0,dep)});
-    }
-  }
-  return found;
+/* ---------- packages ----------
+   Packages are their own cart and reservation lines, separate from individual items.
+   The package rate covers exactly the package contents; anything added on top is an
+   individual item at the regular rate. Cart packages are {pack, qty}; reservations keep
+   a snapshot of each package's name, price, deposit and contents. */
+const packOf = p => p.items ? p : {...RENTAL_PACKAGES[p.pack], qty:p.qty};
+// What one package's contents would cost per day at regular rates.
+const packRegular = p => packOf(p).items.reduce((t,[id,q])=>t+(item(id)?.price||0)*q,0);
+// Every unit a set of item lines and packages takes out of stock.
+function units(lines, packs=[]){
+  const need={};
+  lines.forEach(l=>need[l.itemId]=(need[l.itemId]||0)+l.qty);
+  packs.forEach(p=>packOf(p).items.forEach(([id,q])=>need[id]=(need[id]||0)+q*p.qty));
+  return Object.entries(need).map(([itemId,qty])=>({itemId,qty}));
 }
+// Packages whose full contents are sitting in the cart as individual items.
+const packSuggestions = () => RENTAL_PACKAGES.map((pack,i)=>({pack,i})).filter(({pack})=>pack.items.every(([id,q])=>(DB.cart.find(l=>l.itemId===id)?.qty||0)>=q));
+function swapToPackage(i){
+  for(const [id,q] of RENTAL_PACKAGES[i].items){ const l=DB.cart.find(x=>x.itemId===id); l.qty-=q; }
+  DB.cart=DB.cart.filter(l=>l.qty>0);
+  const ex=DB.cartPacks.find(p=>p.pack===i); if(ex) ex.qty++; else DB.cartPacks.push({pack:i,qty:1});
+  save(); render(); toast(`Switched to the ${RENTAL_PACKAGES[i].name} package`);
+}
+// Lines describing what a reservation holds, packages first.
+const resItems = r => [...(r.packs||[]).map(p=>`${p.qty}× ${esc(p.name)} package`), ...r.lines.map(l=>`${l.qty}× ${esc(item(l.itemId)?.name||'Removed item')}`)];
 const user = id => DB.users.find(u=>u.id===id);
 const me = () => DB.session ? user(DB.session) : null;
 const catName = id => (CATS.find(c=>c.id===id)||{}).name || id;
 const HOLD = ['pending','confirmed','picked_up'];
 const STATUS = {pending:['Awaiting confirmation','warn'], confirmed:['Confirmed','info'], picked_up:['Picked up','ok'], returned:['Returned','neutral'], cancelled:['Cancelled','bad']};
 const statusPill = s => `<span class="pill ${STATUS[s][1]}">${STATUS[s][0]}</span>`;
-const resRentalSubtotal = r => (r.lines.reduce((a,l)=>a+(l.price??item(l.itemId)?.price??0)*l.qty,0)-(r.packageRent||0))*rentalDays(r.start,r.end);
-const resDeposit = r => r.lines.reduce((a,l)=>a+(l.deposit??item(l.itemId)?.deposit??0)*l.qty,0)-(r.packageDep||0);
+const resRentalSubtotal = r => (r.lines.reduce((a,l)=>a+(l.price??item(l.itemId)?.price??0)*l.qty,0)+(r.packs||[]).reduce((a,p)=>a+p.price*p.qty,0))*rentalDays(r.start,r.end);
+const resDeposit = r => r.lines.reduce((a,l)=>a+(l.deposit??item(l.itemId)?.deposit??0)*l.qty,0)+(r.packs||[]).reduce((a,p)=>a+p.deposit*p.qty,0);
 const resTotal = r => resRentalSubtotal(r)+resDeposit(r);
 
 /* ---------- double-booking engine ---------- */
@@ -835,7 +848,7 @@ function bookedOn(itemId, day, exclude){
   let n=0;
   for(const r of DB.reservations){
     if(r.code===exclude || !HOLD.includes(r.status)) continue;
-    if(r.start<=day && day<=r.end) for(const l of r.lines) if(l.itemId===itemId) n+=l.qty;
+    if(r.start<=day && day<=r.end) for(const l of units(r.lines,r.packs)) if(l.itemId===itemId) n+=l.qty;
   }
   return n;
 }
@@ -874,7 +887,7 @@ function renderHeader(){
   if(isAdmin) links.push(['admin','Admin']);
   $('#nav').className='nav'+(UI.menu?' open':'');
   $('#nav').innerHTML = links.map(([v,l])=>`<button data-go="${v}" class="${UI.view===v||(v==='catalog'&&UI.view==='item')?'on':''}">${l}</button>`).join('');
-  const count = DB.cart.reduce((a,l)=>a+l.qty,0);
+  const count = DB.cart.reduce((a,l)=>a+l.qty,0)+DB.cartPacks.reduce((a,p)=>a+p.qty,0);
   $('#hdrRight').innerHTML = `
     <button class="icon-btn" data-go="cart" aria-label="Cart, ${count} items">${I.cart}${count?`<span class="badge-count num">${count>99?'99+':count}</span>`:''}</button>
     ${u ? `<button class="user-chip" data-go="${isAdmin?'admin':'account'}"><span class="avatar">${esc(initials(u.name))}</span><span class="nm">${esc(u.name.split(' ')[0])}</span></button>`
@@ -1036,7 +1049,7 @@ function pageCatalog(){
 }
 function itemModal(id){
   const it=item(id); const a=available(id,DB.period.start,DB.period.end);
-  const inCart=DB.cart.find(l=>l.itemId===id)?.qty||0;
+  const inCart=units(DB.cart,DB.cartPacks).find(l=>l.itemId===id)?.qty||0;
   const max=Math.max(0,a-inCart); const d=rentalDays(DB.period.start,DB.period.end);
   openModal(`<div class="pd">${art(id,it.cat)}<div class="pd-body">
     <span class="card-cat">${catName(it.cat)}</span><h2>${esc(it.name)}</h2>
@@ -1061,37 +1074,48 @@ function itemModal(id){
     save(); closeModal(); render(); toast(`Added ${q} × ${it.name} to your cart`);
   };
 }
-function addPackage(pack){
-  for(const [id,qty] of pack.items){
-    const ex=DB.cart.find(l=>l.itemId===id); if(ex) ex.qty+=qty; else DB.cart.push({itemId:id,qty,note:''});
-  }
-  save(); go('cart'); toast(`${pack.name} package added to your cart`);
+function addPackage(i){
+  const ex=DB.cartPacks.find(p=>p.pack===i); if(ex) ex.qty++; else DB.cartPacks.push({pack:i,qty:1});
+  save(); go('cart'); toast(`${RENTAL_PACKAGES[i].name} package added to your cart`);
 }
 function cartTotals(){
   const d=rentalDays(DB.period.start,DB.period.end);
-  const perDay=DB.cart.reduce((a,l)=>a+item(l.itemId).price*l.qty,0);
-  const packs=packageDiscounts(DB.cart);
-  const packRent=packs.reduce((a,p)=>a+p.rent,0), packDep=packs.reduce((a,p)=>a+p.dep,0);
-  const dep=DB.cart.reduce((a,l)=>a+item(l.itemId).deposit*l.qty,0)-packDep;
-  return {d,perDay:perDay-packRent,rent:(perDay-packRent)*d,dep,packs,packRent,packDep};
+  const itemsDay=DB.cart.reduce((a,l)=>a+item(l.itemId).price*l.qty,0);
+  const packsDay=DB.cartPacks.reduce((a,p)=>a+RENTAL_PACKAGES[p.pack].price*p.qty,0);
+  const dep=DB.cart.reduce((a,l)=>a+item(l.itemId).deposit*l.qty,0)+DB.cartPacks.reduce((a,p)=>a+RENTAL_PACKAGES[p.pack].deposit*p.qty,0);
+  // How much less the packages cost per day than their contents at regular rates.
+  const save=DB.cartPacks.reduce((a,p)=>a+(packRegular(p)-RENTAL_PACKAGES[p.pack].price)*p.qty,0);
+  const perDay=itemsDay+packsDay;
+  return {d,itemsDay,packsDay,perDay,rent:perDay*d,dep,save};
 }
+const cartUnits = () => units(DB.cart,DB.cartPacks);
+const qtyBox = (key,i,qty) => `<div class="qty"><button data-${key}="${i}" data-d="-1" aria-label="Decrease">−</button><input value="${qty}" data-${key}i="${i}" type="number" min="1" aria-label="Quantity"><button data-${key}="${i}" data-d="1" aria-label="Increase">+</button></div>`;
 function pageCart(){
-  const t=cartTotals(); const cf=conflicts(DB.cart,DB.period.start,DB.period.end);
-  if(!DB.cart.length) return `<div class="page-head"><div class="wrap"><div class="crumbs">Home / Cart</div><h1>Your cart</h1></div></div><div class="wrap" style="padding-block:28px 64px"><div class="panel empty">${I.bag}<h3>Your cart is empty</h3><p class="muted">Add chairs, cameras, tents or anything else you need for your dates.</p><button class="btn btn-primary" data-go="catalog">Browse equipment</button></div></div>`;
+  const t=cartTotals(); const cf=conflicts(cartUnits(),DB.period.start,DB.period.end);
+  if(!DB.cart.length && !DB.cartPacks.length) return `<div class="page-head"><div class="wrap"><div class="crumbs">Home / Cart</div><h1>Your cart</h1></div></div><div class="wrap" style="padding-block:28px 64px"><div class="panel empty">${I.bag}<h3>Your cart is empty</h3><p class="muted">Add chairs, cameras, tents or anything else you need for your dates.</p><button class="btn btn-primary" data-go="catalog">Browse equipment</button></div></div>`;
+  const need=Object.fromEntries(cartUnits().map(u=>[u.itemId,u.qty]));
+  const short=id=>available(id,DB.period.start,DB.period.end)<need[id];
+  const days=`${t.d} day${t.d>1?'s':''}`;
   return `<div class="page-head"><div class="wrap"><div class="crumbs">Home / Cart</div><h1>Your cart</h1></div></div>
   <div class="wrap layout-2">
     <div class="stack">
-      <div class="panel"><div class="panel-h"><h3>Rental period</h3><span class="muted num">${t.d} day${t.d>1?'s':''} · ${rentalTerm(t.d)} · all items share these dates</span></div><div class="panel-b">${periodFields('cp')}</div></div>
+      <div class="panel"><div class="panel-h"><h3>Rental period</h3><span class="muted num">${days} · ${rentalTerm(t.d)} · all items share these dates</span></div><div class="panel-b">${periodFields('cp')}</div></div>
       ${cf.length?`<div class="notice bad">${I.info}<span><b>Some items aren't available for these dates.</b> ${cf.map(c=>`${esc(item(c.id).name)}: you need ${c.need}, only ${c.have} free`).join('; ')}. Lower the quantity or change dates.</span></div>`:''}
-      <div class="panel"><div class="panel-h"><h3>Equipment</h3><button class="link-btn" data-go="catalog">Add more items</button></div>
-        ${DB.cart.map((l,i)=>{const it=item(l.itemId);const a=available(it.id,DB.period.start,DB.period.end);const bad=a<l.qty;return `<div class="line">${art(it.id,it.cat)}<div style="min-width:0"><h4>${esc(it.name)}</h4><div class="line-meta num">Daily Rental Rate: ${peso(it.price)} / ${esc(it.unit)} / day · Refundable Security Deposit: ${peso(it.deposit)} / ${esc(it.unit)}${l.note?` · Sizes: ${esc(l.note)}`:''}</div><div style="margin-top:6px">${bad?`<span class="pill bad">${a} free for these dates</span>`:`<span class="pill ok">Available</span>`}</div></div>
-          <div class="line-right"><div class="qty"><button data-cq="${i}" data-d="-1" aria-label="Decrease">−</button><input value="${l.qty}" data-cqi="${i}" type="number" min="1" aria-label="Quantity"><button data-cq="${i}" data-d="1" aria-label="Increase">+</button></div><span class="num" style="font-weight:700"><small>Rental subtotal</small> ${peso(it.price*l.qty*t.d)}</span><button class="link-btn" data-rm="${i}" style="font-size:13px">Remove</button></div></div>`}).join('')}
+      ${packSuggestions().map(({pack,i})=>`<div class="notice gold">${I.sparkle}<span style="flex:1">Your individual items include everything in the <b>${esc(pack.name)}</b> package. Switch to the package rate and save ${peso(packRegular({...pack,qty:1})-pack.price)} / day.</span><button class="btn btn-gold btn-sm" data-swap="${i}">Use package</button></div>`).join('')}
+      ${DB.cartPacks.length?`<div class="panel"><div class="panel-h"><h3>Packages</h3><span class="muted">Package rate · contents are fixed</span></div>
+        ${DB.cartPacks.map((p,i)=>{const pk=RENTAL_PACKAGES[p.pack];const bad=pk.items.some(([id])=>short(id));return `<div class="line">${art(pk.items[0][0],pk.cat)}<div style="min-width:0"><h4>${esc(pk.name)} package</h4><div class="line-meta num">Package rate: ${peso(pk.price)} / day · Refundable Security Deposit: ${peso(pk.deposit)} · Saves ${peso(packRegular(p)-pk.price)} / day per package</div><div class="line-meta">Each package: ${pk.items.map(([id,q])=>`${q} × ${esc(item(id).name)}`).join(' · ')}</div><div style="margin-top:6px">${bad?'<span class="pill bad">Not enough free units for these dates</span>':'<span class="pill ok">Available</span>'}</div></div>
+          <div class="line-right">${qtyBox('pq',i,p.qty)}<span class="num" style="font-weight:700"><small>Rental subtotal</small> ${peso(pk.price*p.qty*t.d)}</span><button class="link-btn" data-prm="${i}" style="font-size:13px">Remove</button></div></div>`}).join('')}
+      </div>`:''}
+      <div class="panel"><div class="panel-h"><h3>Individual items</h3><button class="link-btn" data-go="catalog">Add more items</button></div>
+        ${DB.cart.length?DB.cart.map((l,i)=>{const it=item(l.itemId);const a=available(it.id,DB.period.start,DB.period.end);return `<div class="line">${art(it.id,it.cat)}<div style="min-width:0"><h4>${esc(it.name)}</h4><div class="line-meta num">Daily Rental Rate: ${peso(it.price)} / ${esc(it.unit)} / day · Refundable Security Deposit: ${peso(it.deposit)} / ${esc(it.unit)}${l.note?` · Sizes: ${esc(l.note)}`:''}</div><div style="margin-top:6px">${short(it.id)?`<span class="pill bad">${a} free for these dates</span>`:`<span class="pill ok">Available</span>`}</div></div>
+          <div class="line-right">${qtyBox('cq',i,l.qty)}<span class="num" style="font-weight:700"><small>Rental subtotal</small> ${peso(it.price*l.qty*t.d)}</span><button class="link-btn" data-rm="${i}" style="font-size:13px">Remove</button></div></div>`}).join(''):`<div class="panel-b muted" style="font-size:14px">No individual items. Extras you add here are charged at regular rates.</div>`}
       </div>
     </div>
     <aside class="panel summary"><div class="panel-h"><h3>Summary</h3></div><div class="panel-b">
-      ${t.packs.length?`<div class="sum-row"><span>Equipment at regular rates (${peso(t.perDay+t.packRent)} × ${t.d} day${t.d>1?'s':''})</span><b>${peso((t.perDay+t.packRent)*t.d)}</b></div>`:''}
-      ${t.packs.map(p=>`<div class="sum-row"><span>Package savings · ${esc(p.name)}</span><b class="num" style="color:var(--ok);white-space:nowrap">−${peso(p.rent*t.d)}</b></div>`).join('')}
-      <div class="sum-row"${t.packs.length?' style="border-top:1px solid var(--line);margin-top:8px;padding-top:10px"':''}><span>Rental subtotal (${peso(t.perDay)} × ${t.d} day${t.d>1?'s':''})</span><b>${peso(t.rent)}</b></div>
+      ${DB.cartPacks.map(p=>{const pk=RENTAL_PACKAGES[p.pack];return `<div class="sum-row"><span>${p.qty} × ${esc(pk.name)} package (${peso(pk.price)} × ${days})</span><b>${peso(pk.price*p.qty*t.d)}</b></div>`}).join('')}
+      ${DB.cart.length&&DB.cartPacks.length?`<div class="sum-row"><span>Individual items (${peso(t.itemsDay)} × ${days})</span><b>${peso(t.itemsDay*t.d)}</b></div>`:''}
+      <div class="sum-row"${DB.cartPacks.length?' style="border-top:1px solid var(--line);margin-top:8px;padding-top:10px"':''}><span>Rental subtotal${DB.cartPacks.length?'':` (${peso(t.itemsDay)} × ${days})`}</span><b>${peso(t.rent)}</b></div>
+      ${t.save?`<p style="font-size:13px;color:var(--ok);margin:0 0 6px">Package rates already included: you pay ${peso(t.save*t.d)} less than renting the same items individually.</p>`:''}
       <div class="sum-row"><span>Refundable Security Deposit</span><b>${peso(t.dep)}</b></div>
       <div class="sum-row"><span>Delivery</span><span class="muted">Not offered · pickup only</span></div>
       <div class="sum-row total"><span>Total Amount Due</span><span>${peso(t.rent+t.dep)}</span></div>
@@ -1127,8 +1151,8 @@ function pageCheckout(){
   </form>
   <aside class="panel summary"><div class="panel-h"><h3>Your reservation</h3><button class="link-btn" data-go="cart">Edit</button></div><div class="panel-b">
     <div class="sum-row"><span class="muted">Dates</span><b>${fmtShort(DB.period.start)} – ${fmtShort(DB.period.end)}</b></div>
+    ${DB.cartPacks.map(p=>{const pk=RENTAL_PACKAGES[p.pack];return `<div class="sum-row"><span>Package · ${p.qty} × ${esc(pk.name)}</span><span>${peso(pk.price*p.qty*t.d)}</span></div>`}).join('')}
     ${DB.cart.map(l=>{const it=item(l.itemId);return `<div class="sum-row"><span>Rental · ${l.qty} × ${esc(it.name)}</span><span>${peso(it.price*l.qty*t.d)}</span></div>`}).join('')}
-    ${t.packs.map(p=>`<div class="sum-row"><span>Package savings · ${esc(p.name)}</span><b class="num" style="color:var(--ok);white-space:nowrap">−${peso(p.rent*t.d)}</b></div>`).join('')}
     <div class="sum-row" style="border-top:1px solid var(--line);margin-top:8px;padding-top:10px"><span>Rental subtotal</span><b>${peso(t.rent)}</b></div>
     <div class="sum-row"><span>Refundable Security Deposit</span><b>${peso(t.dep)}</b></div>
     <div class="sum-row total"><span>Total Amount Due</span><span>${peso(t.rent+t.dep)}</span></div>
@@ -1139,13 +1163,12 @@ function placeOrder(){
   c.phone=$('#co-phone').value.trim(); c.notes=$('#co-notes').value.trim(); c.agree=$('#co-agree').checked;
   if(!/^[0-9 +()-]{7,}$/.test(c.phone)){ err.textContent='Enter a valid mobile number so we can reach you about your pickup.'; err.hidden=false; return; }
   if(!c.agree){ err.textContent='Please agree to the rental terms to place your reservation.'; err.hidden=false; return; }
-  const cf=conflicts(DB.cart,DB.period.start,DB.period.end);
+  const cf=conflicts(cartUnits(),DB.period.start,DB.period.end);
   if(cf.length){ toast('Someone just booked some of these units. Please review your cart.',true); go('cart'); return; }
-  const t=cartTotals();
   let code; do{ code='RH-'+(24830+Math.floor(Math.random()*9000)); }while(DB.reservations.some(r=>r.code===code));
-  DB.reservations.unshift({code,userId:DB.session,lines:DB.cart.map(l=>({itemId:l.itemId,qty:l.qty,price:item(l.itemId).price,deposit:item(l.itemId).deposit,note:l.note||''})),packageRent:t.packRent,packageDep:t.packDep,start:DB.period.start,end:DB.period.end,status:'pending',slot:c.slot,pay:c.pay,created:TODAY,notes:c.notes});
+  DB.reservations.unshift({code,userId:DB.session,lines:DB.cart.map(l=>({itemId:l.itemId,qty:l.qty,price:item(l.itemId).price,deposit:item(l.itemId).deposit,note:l.note||''})),packs:DB.cartPacks.map(p=>packSnapshot(p.pack,p.qty)),start:DB.period.start,end:DB.period.end,status:'pending',slot:c.slot,pay:c.pay,created:TODAY,notes:c.notes});
   const u=me(); u.phone=c.phone;
-  DB.cart=[]; UI.checkout=null; UI.lastCode=code; save(); go('confirm');
+  DB.cart=[]; DB.cartPacks=[]; UI.checkout=null; UI.lastCode=code; save(); go('confirm');
 }
 function pageConfirm(){
   const r=DB.reservations.find(x=>x.code===UI.lastCode); if(!r) return pageHome();
@@ -1204,7 +1227,7 @@ function resCard(r, admin){
   return `<article class="res-card">
     <div class="res-top"><div class="row"><span class="code">${r.code}</span>${statusPill(r.status)}</div>
       <div class="res-dates num"><span><b>Pickup</b>${fmt(r.start)} · ${r.slot}</span><span><b>Return by</b>${fmt(r.end)} · ${r.slot}</span><span><b>Rental subtotal</b>${peso(resRentalSubtotal(r))}</span><span><b>Refundable Security Deposit</b>${peso(resDeposit(r))}</span><span><b>Total Amount Due</b>${peso(resTotal(r))}</span>${r.checkin?`<span><b>${r.checkin.owed?'Balance owed':'Deposit refunded'}</b>${peso(r.checkin.owed||r.checkin.refund)}</span>`:''}</div></div>
-    <div class="res-items">${r.lines.map(l=>{const it=item(l.itemId)||{name:'Removed item',cat:'events',id:''};return `<span class="res-item">${art(it.id,it.cat)}${l.qty} × ${esc(it.name)}</span>`}).join('')}</div>
+    <div class="res-items">${(r.packs||[]).map(p=>`<span class="res-item">${art(p.items[0][0],p.cat)}${p.qty} × ${esc(p.name)} package</span>`).join('')}${r.lines.map(l=>{const it=item(l.itemId)||{name:'Removed item',cat:'events',id:''};return `<span class="res-item">${art(it.id,it.cat)}${l.qty} × ${esc(it.name)}</span>`}).join('')}</div>
     ${r.status!=='cancelled'?`<div class="timeline">${steps.map((s,i)=>`<div class="tl ${i<idx||(i===idx&&r.status==='returned')?'done':i===idx?'cur':''}"><i></i>${s[1]}</div>`).join('')}</div>`:''}
     ${canCancel?`<div class="res-actions"><span class="muted" style="font-size:13px;margin-right:auto">Free cancellation until the day before pickup</span><button class="btn btn-danger btn-sm" data-cancel="${r.code}">Cancel reservation</button></div>`:''}
   </article>`;
@@ -1247,7 +1270,7 @@ function adminOverview(){
   const rev=live.filter(r=>r.created.slice(0,7)===month||r.start.slice(0,7)===month).reduce((a,r)=>a+resRentalSubtotal(r),0);
   const pickups=DB.reservations.filter(r=>r.start===TODAY&&['pending','confirmed'].includes(r.status));
   const returns=DB.reservations.filter(r=>r.end===TODAY&&r.status==='picked_up');
-  const unitsOut=DB.reservations.filter(r=>r.status==='picked_up').reduce((a,r)=>a+r.lines.reduce((b,l)=>b+l.qty,0),0);
+  const unitsOut=DB.reservations.filter(r=>r.status==='picked_up').reduce((a,r)=>a+units(r.lines,r.packs).reduce((b,l)=>b+l.qty,0),0);
   const pend=DB.reservations.filter(r=>r.status==='pending');
   const tight=DB.items.map(it=>{let min=it.stock,day=null;for(let i=0;i<14;i++){const d=addDays(TODAY,i);const a=it.status==='active'?it.stock-bookedOn(it.id,d):0;if(a<min){min=a;day=d}}return {it,min,day}}).filter(x=>x.it.status==='active'&&x.min<=Math.ceil(x.it.stock*.2)).sort((a,b)=>a.min-b.min);
   const util=DB.items.map(it=>({it,u:it.stock?bookedOn(it.id,TODAY)/it.stock:0})).sort((a,b)=>b.u-a.u).slice(0,6);
@@ -1259,8 +1282,8 @@ function adminOverview(){
     <div class="stat"><small>Customers</small><b>${DB.users.filter(u=>u.role==='customer').length}</b><span>Registered accounts</span></div>
   </div>
   <div class="grid-2">
-    <div class="panel"><div class="panel-h"><h3>Today's pickups</h3><span class="muted">${pickups.length}</span></div>${pickups.length?pickups.map(r=>`<div class="list-row"><div><b class="mono">${r.code}</b> · ${esc(user(r.userId).name)}<div class="muted" style="font-size:13px">${r.slot} · ${r.lines.map(l=>l.qty+'× '+esc(item(l.itemId).name)).join(', ')}</div></div>${r.status==='confirmed'?`<button class="btn btn-gold btn-sm" data-st="${r.code}|picked_up">Release gear</button>`:`<button class="btn btn-primary btn-sm" data-st="${r.code}|confirmed">Confirm</button>`}</div>`).join(''):'<div class="list-row muted">No pickups scheduled today.</div>'}</div>
-    <div class="panel"><div class="panel-h"><h3>Due back today</h3><span class="muted">${returns.length}</span></div>${returns.length?returns.map(r=>`<div class="list-row"><div><b class="mono">${r.code}</b> · ${esc(user(r.userId).name)}<div class="muted" style="font-size:13px">${r.lines.map(l=>l.qty+'× '+esc(item(l.itemId).name)).join(', ')}</div></div><button class="btn btn-ghost btn-sm" data-st="${r.code}|returned">Check in</button></div>`).join(''):'<div class="list-row muted">Nothing due back today.</div>'}</div>
+    <div class="panel"><div class="panel-h"><h3>Today's pickups</h3><span class="muted">${pickups.length}</span></div>${pickups.length?pickups.map(r=>`<div class="list-row"><div><b class="mono">${r.code}</b> · ${esc(user(r.userId).name)}<div class="muted" style="font-size:13px">${r.slot} · ${resItems(r).join(', ')}</div></div>${r.status==='confirmed'?`<button class="btn btn-gold btn-sm" data-st="${r.code}|picked_up">Release gear</button>`:`<button class="btn btn-primary btn-sm" data-st="${r.code}|confirmed">Confirm</button>`}</div>`).join(''):'<div class="list-row muted">No pickups scheduled today.</div>'}</div>
+    <div class="panel"><div class="panel-h"><h3>Due back today</h3><span class="muted">${returns.length}</span></div>${returns.length?returns.map(r=>`<div class="list-row"><div><b class="mono">${r.code}</b> · ${esc(user(r.userId).name)}<div class="muted" style="font-size:13px">${resItems(r).join(', ')}</div></div><button class="btn btn-ghost btn-sm" data-st="${r.code}|returned">Check in</button></div>`).join(''):'<div class="list-row muted">Nothing due back today.</div>'}</div>
     <div class="panel"><div class="panel-h"><h3>Low availability, next 14 days</h3></div>${tight.length?tight.map(x=>`<div class="list-row"><span><b>${esc(x.it.name)}</b><div class="muted" style="font-size:13px">Tightest on ${fmt(x.day)}</div></span>${x.min===0?'<span class="pill bad">Fully booked</span>':`<span class="pill warn">${x.min} of ${x.it.stock} free</span>`}</div>`).join(''):'<div class="list-row muted">All items have healthy availability.</div>'}</div>
     <div class="panel"><div class="panel-h"><h3>Utilization today</h3></div><div class="panel-b stack">${util.map(x=>`<div class="row" style="justify-content:space-between;flex-wrap:nowrap"><span style="min-width:0;flex:1">${esc(x.it.name)}</span><div class="bar" style="flex:1"><i style="width:${Math.round(x.u*100)}%"></i></div><span class="num muted" style="width:44px;text-align:right">${Math.round(x.u*100)}%</span></div>`).join('')}</div></div>
   </div>`;
@@ -1275,14 +1298,14 @@ function adminReservations(){
     <input class="input" id="resQ" placeholder="Search code or customer" value="${esc(UI.resQ)}" style="max-width:260px"></div>
   <div class="panel tbl-wrap"><table><thead><tr><th>Code</th><th>Customer</th><th>Items</th><th>Pickup → Return</th><th class="num">Total Amount Due</th><th>Status</th><th>Actions</th></tr></thead><tbody>
   ${list.map(r=>{const u=user(r.userId);const next={pending:[['confirmed','Confirm','btn-primary']],confirmed:[['picked_up','Release','btn-gold']],picked_up:[['returned','Check in','btn-ghost']],returned:[],cancelled:[['pending','Restore','btn-ghost']]}[r.status];
-    return `<tr><td class="mono" style="font-weight:600">${r.code}</td><td><b>${esc(u.name)}</b><div class="muted" style="font-size:12.5px">${esc(u.phone)}</div></td><td style="min-width:200px">${r.lines.map(l=>`${l.qty}× ${esc(item(l.itemId)?.name||'—')}`).join('<br>')}</td><td class="num" style="white-space:nowrap">${fmtShort(r.start)} → ${fmtShort(r.end)}<div class="muted" style="font-size:12.5px">${r.slot} · ${r.pay==='gcash'?'GCash 20%':'Pay at shop'}</div></td><td class="num">${peso(resTotal(r))}<div class="muted" style="font-size:12px">Rental: ${peso(resRentalSubtotal(r))}<br>Refundable Security Deposit: ${peso(resDeposit(r))}</div></td><td>${statusPill(r.status)}${resRecord(r)?`<div class="muted" style="font-size:12px;margin-top:4px">${resRecord(r)}</div>`:''}</td>
+    return `<tr><td class="mono" style="font-weight:600">${r.code}</td><td><b>${esc(u.name)}</b><div class="muted" style="font-size:12.5px">${esc(u.phone)}</div></td><td style="min-width:200px">${resItems(r).join('<br>')}</td><td class="num" style="white-space:nowrap">${fmtShort(r.start)} → ${fmtShort(r.end)}<div class="muted" style="font-size:12.5px">${r.slot} · ${r.pay==='gcash'?'GCash 20%':'Pay at shop'}</div></td><td class="num">${peso(resTotal(r))}<div class="muted" style="font-size:12px">Rental: ${peso(resRentalSubtotal(r))}<br>Refundable Security Deposit: ${peso(resDeposit(r))}</div></td><td>${statusPill(r.status)}${resRecord(r)?`<div class="muted" style="font-size:12px;margin-top:4px">${resRecord(r)}</div>`:''}</td>
     <td><div class="row" style="flex-wrap:nowrap">${next.map(([s,l,c])=>`<button class="btn ${c} btn-sm" data-st="${r.code}|${s}">${l}</button>`).join('')}${['pending','confirmed'].includes(r.status)?`<button class="btn btn-danger btn-sm" data-st="${r.code}|cancelled">Cancel</button>`:''}</div></td></tr>`}).join('')||'<tr><td colspan="7" class="muted" style="text-align:center;padding:32px">No reservations match.</td></tr>'}
   </tbody></table></div>`;
 }
 function setStatus(code, s){
   const r=DB.reservations.find(x=>x.code===code); if(!r) return;
   if(s==='pending' && r.status==='cancelled'){
-    const cf=conflicts(r.lines,r.start,r.end,r.code);
+    const cf=conflicts(units(r.lines,r.packs),r.start,r.end,r.code);
     if(cf.length){ toast(`Can't restore ${code}: ${cf.map(c=>`${item(c.id).name} has only ${c.have} free`).join(', ')}. Double booking blocked.`,true); return; }
   }
   if(s==='picked_up') return releaseModal(r);
@@ -1388,7 +1411,7 @@ function render(){
   if(['account','checkout'].includes(UI.view) && !u){ UI.authNext=UI.view; UI.view='auth'; }
   if(UI.view==='admin' && (!u||u.role!=='admin')){ UI.authNext=null; UI.view='auth'; }
   if(UI.view==='account' && u && u.role==='admin') UI.view='admin';
-  if(UI.view==='checkout' && !DB.cart.length) UI.view='cart';
+  if(UI.view==='checkout' && !DB.cart.length && !DB.cartPacks.length) UI.view='cart';
   renderHeader();
   const pages={home:pageHome,catalog:pageCatalog,cart:pageCart,checkout:pageCheckout,confirm:pageConfirm,auth:pageAuth,account:pageAccount,admin:pageAdmin,
     how:()=>`<div class="page-head"><div class="wrap"><div class="crumbs">Home / How it works</div><h1>How renting works</h1></div></div><section class="section"><div class="wrap">${stepsHtml()}</div></section>${pickupBand()}`};
@@ -1402,6 +1425,7 @@ function bind(){
   const cq=$('#clearQ'); if(cq) cq.onclick=()=>{UI.q='';render();};
   const tc=$('#toCheckout'); if(tc) tc.onclick=()=>{ if(!me()){UI.authNext='checkout';go('auth');} else go('checkout'); };
   document.querySelectorAll('[data-cqi]').forEach(inp=>inp.onchange=()=>{ const l=DB.cart[+inp.dataset.cqi]; l.qty=Math.max(1,Math.floor(+inp.value||1)); save(); render(); });
+  document.querySelectorAll('[data-pqi]').forEach(inp=>inp.onchange=()=>{ const p=DB.cartPacks[+inp.dataset.pqi]; p.qty=Math.max(1,Math.floor(+inp.value||1)); save(); render(); });
   const co=$('#coForm'); if(co){ co.onsubmit=e=>{e.preventDefault();placeOrder();}; co.querySelectorAll('input[name=pay]').forEach(r=>r.onchange=()=>UI.checkout.pay=r.value); }
   const af=$('#authForm'); if(af) af.onsubmit=e=>{e.preventDefault();doAuth();};
   const pf=$('#profForm'); if(pf) pf.onsubmit=e=>{e.preventDefault(); const u=me(); u.name=$('#p-name').value.trim()||u.name; u.phone=$('#p-phone').value.trim()||u.phone; save(); render(); toast('Profile saved');};
@@ -1429,7 +1453,10 @@ document.addEventListener('click',e=>{
   if(t.id==='menuBtn'){ UI.menu=!UI.menu; renderHeader(); return; }
   if(d.go){ if(d.go==='how'&&UI.view==='home'){ UI.menu=false; renderHeader(); $('#how').scrollIntoView({behavior:'smooth'}); return;} go(d.go); return; }
   if(d.catGo){ go('catalog',{cat:d.catGo,q:''}); return; }
-  if(d.pack){ addPackage(RENTAL_PACKAGES[+d.pack]); return; }
+  if(d.pack){ addPackage(+d.pack); return; }
+  if(d.pq!==undefined){ const p=DB.cartPacks[+d.pq]; p.qty=Math.max(1,p.qty+(+d.d)); save(); render(); return; }
+  if(d.prm!==undefined){ const p=DB.cartPacks.splice(+d.prm,1)[0]; save(); render(); toast(`Removed the ${RENTAL_PACKAGES[p.pack].name} package`); return; }
+  if(d.swap!==undefined){ swapToPackage(+d.swap); return; }
   if(d.catSet){ UI.cat=d.catSet; render(); return; }
   if(d.item){ itemModal(d.item); return; }
   if(d.cq!==undefined){ const l=DB.cart[+d.cq]; l.qty=Math.max(1,l.qty+(+d.d)); save(); render(); return; }

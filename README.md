@@ -46,5 +46,5 @@ Rates, deposits, packages and stock follow the feasibility study (Tables 5, 6 an
 - This is a front-end mockup. The data is sample data saved in the browser's `localStorage`, and there is no backend yet.
 - The phone number, email and testimonials are placeholders.
 - Prices, deposits and packages are set near the top of the script in `index.html` (`SEED_ITEMS` and `RENTAL_PACKAGES`). After changing a price, raise `PRICING_VERSION` by 1 so browsers load the new sample data.
-- Rental packages are applied automatically: when the cart holds every item of a package, the cart shows the package price.
+- Rental packages are their own cart lines with fixed contents and the package rate. Anything added on top is an individual item at the regular rate, so a package's discount never grows with extra items. Loose items that make up a full package aren't discounted automatically; the cart offers to switch them to the package.
 - Static site: open `index.html` directly, or deploy the folder to any static host (it's deployed on Vercel).
