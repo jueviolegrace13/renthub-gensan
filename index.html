@@ -102,6 +102,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .field{display:flex;flex-direction:column;gap:4px;min-width:0}
 .field label{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .input,select.input,textarea.input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);min-width:0}
+select option{color:var(--ink);background:var(--surface)}
 .input:focus{outline:2px solid var(--gold);outline-offset:0;border-color:transparent}
 .search-card .btn{align-self:end;height:44px}
 .hero-trust{display:flex;gap:22px;margin-top:22px;flex-wrap:wrap;font-size:13.5px;color:#C9D6EA}
@@ -129,11 +130,28 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 .art{background:var(--tile);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;max-width:100%}
 .art svg{width:78%;height:auto;max-height:86%}
+.art .equipment-photo{width:100%;height:100%;min-width:0;object-fit:contain;padding:10px}
+.art.paired .equipment-photo{width:50%;padding:6px}
 .art[data-cat="events"]{background:linear-gradient(160deg,var(--tile),color-mix(in srgb,var(--gold) 14%,var(--tile)))}
 .art[data-cat="entertainment"]{background:linear-gradient(160deg,var(--tile),color-mix(in srgb,#8a5cc8 12%,var(--tile)))}
 .art[data-cat="photography"]{background:linear-gradient(160deg,var(--tile),color-mix(in srgb,var(--sea) 14%,var(--tile)))}
 .art[data-cat="outdoor"]{background:linear-gradient(160deg,var(--tile),color-mix(in srgb,var(--leaf) 16%,var(--tile)))}
 .art[data-cat="beach"]{background:linear-gradient(160deg,var(--tile),color-mix(in srgb,#1aa3b8 18%,var(--tile)))}
+
+.package-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.package-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.package-card h3{font-size:19px}
+.package-price{font-family:var(--f-display);font-size:28px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.package-price small{font-family:var(--f-body);font-size:13px;font-weight:600;color:var(--muted)}
+.package-deposit{display:flex;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px solid var(--line);font-size:13.5px}
+.package-deposit b{font-variant-numeric:tabular-nums}
+.package-includes{list-style:none;padding:0;margin:0;display:grid;gap:7px;font-size:13.5px;color:var(--muted)}
+.package-includes li{display:flex;justify-content:space-between;gap:12px}
+.package-includes b{color:var(--ink);font-weight:700}
+.package-includes li.package-fin-choice{display:grid;gap:6px}
+.package-fin-choice label{font-size:12px;font-weight:700;color:var(--ink)}
+.package-card .btn{margin-top:auto}
+.package-note{font-size:13px;color:var(--muted);margin-top:16px}
 
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:s}
 .step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:8px}
@@ -359,6 +377,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 /* Responsive */
 @media (max-width:1020px){
   .cat-grid{grid-template-columns:repeat(3,1fr)}
+  .package-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .hero .wrap{grid-template-columns:1fr}
   .hero-art{display:none}
   .search-card{grid-template-columns:1fr 1fr}
@@ -383,6 +402,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
   .user-chip .nm{display:none}
   .cat-grid{grid-template-columns:repeat(2,1fr)}
   .steps,.quotes,.grid-2{grid-template-columns:1fr}
+  .package-grid{grid-template-columns:1fr}
   .stats{grid-template-columns:repeat(2,1fr)}
   .pd{grid-template-columns:1fr}
   .pd .art{min-height:200px}
@@ -522,7 +542,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 /* Pickup band */
 .pickup-band{background:radial-gradient(600px 300px at 90% 0%,rgba(240,197,90,.14),transparent 60%),#071A33}
 .pickup-band h2{font-size:clamp(30px,3.6vw,44px);letter-spacing:-.02em}
-.shop-card{background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border-color:rgba(240,197,90,.25);border-radius:22px;padding:28px}
+.shop-card{background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border-color:rgba(240,197,90,.25);border-radius:22px;padding:28px;align-self:center}
 
 /* CTA */
 .cta{border-radius:26px;padding:48px;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;background:radial-gradient(500px 260px at 100% 0%,rgba(255,255,255,.35),transparent 60%),var(--gold-grad);color:#1A1405;box-shadow:0 30px 60px rgba(201,149,32,.25)}
@@ -594,6 +614,9 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
   .step:last-child{border-bottom:0}
   .feature-quote{padding:28px}
 }
+@media (max-width:600px){
+  .search-card .field:nth-child(2),.search-card .field:nth-child(3){grid-column:1/-1}
+}
 @media (max-width:440px){
   .search-card{grid-template-columns:1fr}
   .bento{grid-template-columns:1fr}
@@ -649,23 +672,64 @@ const CATS = [
   {id:'outdoor', name:'Outdoor & Camping', blurb:'Tents, chairs and tables for Lake Sebu and mountain trips.', hero:'tent'},
   {id:'beach', name:'Beach & Water', blurb:'Snorkeling and safety gear for Sarangani Bay outings.', hero:'mask'},
 ];
-const SEED_ITEMS = [
-  {id:'chairs', cat:'events', name:'Event Chairs', price:15, unit:'chair', deposit:50, stock:200, desc:'White resin monoblock chairs with seat covers available on request. Stackable, easy to transport in a pickup or van.', includes:['Wiped and sanitized before release','Stack of 10 per bundle','Optional white seat cover (+₱10)']},
-  {id:'tables', cat:'events', name:'Event Tables', price:150, unit:'table', deposit:300, stock:30, desc:'6-ft rectangular folding tables that seat 6–8 guests. Comes with a white table cloth.', includes:['White table cloth included','Folding steel legs','Seats 6–8 guests']},
-  {id:'sound', cat:'events', name:'Sound System', price:1500, unit:'set', deposit:3000, stock:3, desc:'Pair of 15-inch powered speakers with a 12-channel mixer and two wireless microphones. Good for up to 150 guests.', includes:['2 × 15" powered speakers with stands','12-channel mixer','2 wireless mics','Cables and extension reel']},
-  {id:'karaoke', cat:'entertainment', name:'Karaoke Machine', price:800, unit:'set', deposit:1500, stock:4, desc:'Plug-and-play videoke unit with 30,000+ songs, scoring, and two wired microphones. Connects to any TV via HDMI.', includes:['Videoke player with song book','2 wired microphones','HDMI and remote control']},
-  {id:'boardgames', cat:'entertainment', name:'Board Games', price:150, unit:'game', deposit:500, stock:12, desc:'Pick from party and strategy titles for 2–10 players. Each box is counted and checked before release.', includes:['Complete set, piece-counted','Rules sheet in English and Filipino','Pick titles at the counter']},
-  {id:'projector', cat:'entertainment', name:'Projector and Screen', price:1200, unit:'set', deposit:3000, stock:3, desc:'Full HD 3,500-lumen projector with a 100-inch tripod screen. Ideal for outdoor movie nights and presentations.', includes:['1080p projector, 3,500 lumens','100" tripod screen','HDMI cable and carry case']},
-  {id:'dslr', cat:'photography', name:'DSLR Camera', price:1200, unit:'kit', deposit:5000, stock:4, desc:'24MP DSLR with an 18–55mm kit lens, 64GB card and two batteries. Great for events, portraits and travel.', includes:['24MP body + 18–55mm lens','64GB SD card','2 batteries and charger','Padded camera bag']},
-  {id:'underwater', cat:'photography', name:'Underwater Camera', price:700, unit:'kit', deposit:3000, stock:4, desc:'4K action camera in a 40m waterproof housing with a floating hand grip. Built for snorkeling and diving.', includes:['4K action camera','Waterproof housing (40m)','Floating hand grip','32GB card']},
-  {id:'reflector', cat:'photography', name:'Photography Reflector Set', price:250, unit:'set', deposit:800, stock:5, desc:'5-in-1 collapsible 110cm reflector with gold, silver, white, black and diffuser surfaces, plus a holder arm.', includes:['5-in-1 reflector, 110cm','Light stand with holder arm','Zip carry bag']},
-  {id:'tent', cat:'outdoor', name:'Camping Tent', price:450, unit:'tent', deposit:1000, stock:10, desc:'Waterproof 4-person dome tent with rain fly and ground sheet. Sets up in about 10 minutes.', includes:['4-person dome tent','Rain fly and ground sheet','Stakes and guy lines']},
-  {id:'campchair', cat:'outdoor', name:'Folding Camping Chair', price:80, unit:'chair', deposit:200, stock:20, desc:'Lightweight steel-frame chair with cup holder and shoulder bag. Supports up to 120kg.', includes:['Cup holder armrest','Carry bag with strap','120kg capacity']},
-  {id:'camptable', cat:'outdoor', name:'Folding Camping Table', price:180, unit:'table', deposit:400, stock:8, desc:'Aluminum roll-top table that folds into a carry bag. Fits 4 people for meals at camp.', includes:['Aluminum roll-top','Adjustable legs','Carry bag']},
-  {id:'fins', cat:'beach', name:'Swim/Diving Fins', price:100, unit:'pair', deposit:300, stock:16, desc:'Open-heel adjustable fins for snorkeling and recreational diving. Sizes S to XL.', includes:['Adjustable heel strap','Sizes S–XL','Rinsed and sanitized']},
-  {id:'mask', cat:'beach', name:'Diving Mask', price:120, unit:'mask', deposit:300, stock:16, desc:'Tempered-glass mask with silicone skirt and a dry-top snorkel. Anti-fog treated before every rental.', includes:['Tempered-glass lens','Dry-top snorkel','Anti-fog treated']},
-  {id:'vest', cat:'beach', name:'Life Vest – Kids and Adults', price:100, unit:'vest', deposit:300, stock:20, desc:'Coast-guard-style buoyancy vests with buckles and crotch strap. Available in kids (15–40kg) and adult sizes.', includes:['Kids and adult sizes','Buckle closure + crotch strap','Reflective tape']},
+const RENTAL_PACKAGES = [
+  {name:'Events and Parties',cat:'events',price:1400,deposit:700,items:[['chairs',50],['tables',5],['sound',1]]},
+  {name:'Entertainment Equipment',cat:'entertainment',price:1700,deposit:850,items:[['karaoke',1],['boardgames',2],['projector',1]]},
+  {name:'Photography and Content Creation',cat:'photography',price:720,deposit:360,items:[['dslr',1],['underwater',1],['reflector',1]]},
+  {name:'Outdoor and Camping',cat:'outdoor',price:550,deposit:275,items:[['tent',1],['campchair',4],['camptable',1]]},
+  {name:'Beach and Water Activities',cat:'beach',price:1530,deposit:765,items:[['fins-plastic',4],['mask',4],['vest',4]]},
 ];
+const SEED_ITEMS = [
+  {id:'chairs', cat:'events', name:'Event Chair', price:15, unit:'chair', deposit:8, stock:200, desc:'White resin monoblock chairs with seat covers available on request. Stackable, easy to transport in a pickup or van.', includes:['Wiped and sanitized before release','Stack of 10 per bundle','Optional white seat cover (+₱10)']},
+  {id:'tables', cat:'events', name:'Event Table', price:120, unit:'table', deposit:60, stock:30, desc:'6-ft rectangular folding tables that seat 6–8 guests. Comes with a white table cloth.', includes:['White table cloth included','Folding steel legs','Seats 6–8 guests']},
+  {id:'sound', cat:'events', name:'Sound System', price:800, unit:'set', deposit:400, stock:3, desc:'Pair of 15-inch powered speakers with a 12-channel mixer and two wireless microphones. Good for up to 150 guests.', includes:['2 × 15" powered speakers with stands','12-channel mixer','2 wireless mics','Cables and extension reel']},
+  {id:'karaoke', cat:'entertainment', name:'Karaoke Machine', price:800, unit:'set', deposit:400, stock:4, desc:'Plug-and-play videoke unit with 30,000+ songs, scoring, and two wired microphones. Connects to any TV via HDMI.', includes:['Videoke player with song book','2 wired microphones','HDMI and remote control']},
+  {id:'boardgames', cat:'entertainment', name:'Board Game Set', price:80, unit:'set', deposit:40, stock:12, desc:'Pick from party and strategy titles for 2–10 players. Each box is counted and checked before release.', includes:['Complete set, piece-counted','Rules sheet in English and Filipino','Pick titles at the counter']},
+  {id:'projector', cat:'entertainment', name:'Projector and Screen Set', price:1000, unit:'set', deposit:500, stock:3, desc:'Full HD 3,500-lumen projector with a 100-inch tripod screen. Ideal for outdoor movie nights and presentations.', includes:['1080p projector, 3,500 lumens','100" tripod screen','HDMI cable and carry case']},
+  {id:'dslr', cat:'photography', name:'DSLR Camera', price:650, unit:'kit', deposit:325, stock:4, desc:'24MP DSLR with an 18–55mm kit lens, 64GB card and two batteries. Great for events, portraits and travel.', includes:['24MP body + 18–55mm lens','64GB SD card','2 batteries and charger','Padded camera bag']},
+  {id:'underwater', cat:'photography', name:'Underwater Camera', price:600, unit:'kit', deposit:300, stock:4, desc:'4K action camera in a 40m waterproof housing with a floating hand grip. Built for snorkeling and diving.', includes:['4K action camera','Waterproof housing (40m)','Floating hand grip','32GB card']},
+  {id:'reflector', cat:'photography', name:'Photography Reflector Set', price:150, unit:'set', deposit:75, stock:5, desc:'5-in-1 collapsible 110cm reflector with gold, silver, white, black and diffuser surfaces, plus a holder arm.', includes:['5-in-1 reflector, 110cm','Light stand with holder arm','Zip carry bag']},
+  {id:'tent', cat:'outdoor', name:'Camping Tent', price:350, unit:'tent', deposit:175, stock:10, desc:'Waterproof 4-person dome tent with rain fly and ground sheet. Sets up in about 10 minutes.', includes:['4-person dome tent','Rain fly and ground sheet','Stakes and guy lines']},
+  {id:'campchair', cat:'outdoor', name:'Folding Camping Chair', price:75, unit:'chair', deposit:38, stock:20, desc:'Lightweight steel-frame chair with cup holder and shoulder bag. Supports up to 120kg.', includes:['Cup holder armrest','Carry bag with strap','120kg capacity']},
+  {id:'camptable', cat:'outdoor', name:'Folding Camping Table', price:120, unit:'table', deposit:60, stock:8, desc:'Aluminum roll-top table that folds into a carry bag. Fits 4 people for meals at camp.', includes:['Aluminum roll-top','Adjustable legs','Carry bag']},
+  {id:'fins-plastic', cat:'beach', name:'Plastic Fins (Pair)', price:250, unit:'pair', deposit:125, stock:8, desc:'Lightweight plastic fins for snorkeling and recreational diving. Sizes S to XL.', includes:['Lightweight plastic blades','Sizes S–XL','Rinsed and sanitized']},
+  {id:'fins-carbon', cat:'beach', name:'Carbon Fiber Fins (Pair)', price:500, unit:'pair', deposit:250, stock:4, desc:'Responsive carbon fiber fins for snorkeling and recreational diving. Sizes S to XL.', includes:['Responsive carbon fiber blades','Sizes S–XL','Rinsed and sanitized']},
+  {id:'fins-ice', cat:'beach', name:'Ice Fins (Pair)', price:300, unit:'pair', deposit:150, stock:4, desc:'Ice fins for snorkeling and recreational diving. Sizes S to XL.', includes:['Durable ice-fins construction','Sizes S–XL','Rinsed and sanitized']},
+  {id:'fins-short', cat:'beach', name:'Short Fins (Pair)', price:150, unit:'pair', deposit:75, stock:8, desc:'Compact short-blade fins for snorkeling and recreational swimming. Sizes S to XL.', includes:['Compact short blades','Sizes S–XL','Rinsed and sanitized']},
+  {id:'mask', cat:'beach', name:'Diving Mask', price:60, unit:'mask', deposit:30, stock:16, desc:'Tempered-glass mask with silicone skirt and a dry-top snorkel. Anti-fog treated before every rental.', includes:['Tempered-glass lens','Dry-top snorkel','Anti-fog treated']},
+  {id:'vest', cat:'beach', name:'Life Vest (Kids/Adults)', price:120, unit:'vest', deposit:60, stock:20, desc:'Coast-guard-style buoyancy vests with buckles and crotch strap. Available in kids (15–40kg) and adult sizes.', includes:['Kids and adult sizes','Buckle closure + crotch strap','Reflective tape']},
+];
+const PRICING_VERSION = 4;
+
+/* ---------- equipment images ---------- */
+const EQUIPMENT_IMAGES = {
+  chairs:'assets/products/event-chair.webp',
+  tables:'assets/products/event-table.webp',
+  sound:'assets/products/sound-system.webp',
+  karaoke:'assets/products/karaoke-machine-existing.webp',
+  boardgames:'assets/products/board-games-existing.webp',
+  projector:'assets/products/projector-screen-existing.webp',
+  dslr:'assets/products/dslr-camera.webp',
+  underwater:'assets/products/underwater-camera-existing.webp',
+  reflector:'assets/products/reflector-set-no-bg.webp',
+  tent:'assets/products/camping-tent-existing.webp',
+  campchair:'assets/products/camping-chair.webp',
+  camptable:'assets/products/camping-table.webp',
+  'fins-plastic':'assets/products/plastic-fins.webp',
+  'fins-carbon':'assets/products/carbon-fins-existing.webp',
+  'fins-ice':'assets/products/ice-fins-existing.webp',
+  'fins-short':'assets/products/short-fins.webp',
+  mask:'assets/products/diving-mask.webp',
+  vest:['assets/products/lifevest-kids.webp','assets/products/lifevest-adult.webp'],
+};
+const equipmentImages = id => {
+  const images=EQUIPMENT_IMAGES[id];
+  return images ? (Array.isArray(images)?images:[images]) : [];
+};
+const equipmentPhotos = id => {
+  const images=equipmentImages(id);
+  return images.length ? images.map(src=>`<img class="equipment-photo" src="${src}" alt="">`).join('') : `<svg viewBox="0 0 160 120" aria-hidden="true">${ART[id]||ART.tent}</svg>`;
+};
 
 /* ---------- illustrations ---------- */
 const A='var(--art-a)',B='var(--art-b)',C='var(--art-c)',D='var(--art-d)',E='var(--art-e)';
@@ -686,7 +750,7 @@ const ART = {
  mask:`<path d="M20 44c0-12 12-18 30-18h40c18 0 30 6 30 18v18c0 14-10 22-24 22-10 0-14-10-26-10s-16 10-26 10c-14 0-24-8-24-22z" fill="${A}"/><path d="M30 46c0-8 8-10 20-10h14v30c-8 0-10 8-18 8-10 0-16-6-16-14zM110 46c0-8-8-10-20-10H76v30c8 0 10 8 18 8 10 0 16-6 16-14z" fill="${E}" opacity=".55"/><path d="M134 92V20c0-6 6-8 10-4" fill="none" stroke="${B}" stroke-width="7" stroke-linecap="round"/><path d="M120 92h14" stroke="${B}" stroke-width="7" stroke-linecap="round"/>`,
  vest:`<path d="M52 14h16l12 20 12-20h16l18 22v62c0 6-4 10-10 10H44c-6 0-10-4-10-10V36z" fill="${B}"/><path d="M80 34v74" stroke="${A}" stroke-width="3"/><path d="M34 58h92M34 80h92" stroke="${A}" stroke-width="6"/><rect x="72" y="52" width="16" height="12" rx="2" fill="${A}"/><rect x="72" y="74" width="16" height="12" rx="2" fill="${A}"/><path d="M42 98h76" stroke="${C}" stroke-width="4" opacity=".8"/>`,
 };
-const art = (id, cat, extra='') => `<div class="art" data-cat="${cat}" ${extra}><svg viewBox="0 0 160 120" aria-hidden="true">${ART[id]||ART.tent}</svg></div>`;
+const art = (id, cat, extra='') => `<div class="art${equipmentImages(id).length>1?' paired':''}" data-cat="${cat}" ${extra}>${equipmentPhotos(id)}</div>`;
 
 /* ---------- icons ---------- */
 const I = {
@@ -719,36 +783,80 @@ function seed(){
     {id:'u3', name:'Paolo Reyes', email:'paolo.r@example.com', pass:'demo123', phone:'0927 410 8833', role:'customer', joined:addDays(TODAY,-30)},
     {id:'u4', name:'Aileen Villanueva', email:'aileen.v@example.com', pass:'demo123', phone:'0995 118 2207', role:'customer', joined:addDays(TODAY,-12)},
   ];
-  const mk = (code,userId,lines,s,e,status,slot,pay,created) => ({code,userId,lines:lines.map(([itemId,qty])=>({itemId,qty,price:SEED_ITEMS.find(i=>i.id===itemId).price})),start:addDays(TODAY,s),end:addDays(TODAY,e),status,slot,pay,created:addDays(TODAY,created),notes:''});
+  const mk = (code,userId,lines,s,e,status,slot,pay,created) => ({code,userId,lines:lines.map(([itemId,qty])=>{const it=SEED_ITEMS.find(i=>i.id===itemId);return {itemId,qty,price:it.price,deposit:it.deposit}}),start:addDays(TODAY,s),end:addDays(TODAY,e),status,slot,pay,created:addDays(TODAY,created),notes:''});
   const reservations = [
     mk('RH-24817','u1',[['sound',1],['chairs',80],['tables',10]],3,5,'confirmed','9:00 AM','shop',-4),
     mk('RH-24822','u2',[['sound',2]],4,5,'pending','10:00 AM','gcash',-1),
     mk('RH-24790','u3',[['tent',3],['campchair',6],['camptable',2]],0,2,'picked_up','8:00 AM','shop',-6),
-    mk('RH-24805','u4',[['mask',4],['fins',4],['vest',4],['underwater',1]],0,1,'confirmed','1:00 PM','gcash',-3),
+    mk('RH-24805','u4',[['mask',4],['fins-plastic',4],['vest',4],['underwater',1]],0,1,'confirmed','1:00 PM','gcash',-3),
     mk('RH-24761','u1',[['karaoke',1],['projector',1]],-14,-12,'returned','3:00 PM','shop',-20),
     mk('RH-24733','u2',[['dslr',1],['reflector',1]],-9,-8,'returned','10:00 AM','gcash',-15),
     mk('RH-24829','u3',[['projector',2],['boardgames',3]],7,8,'pending','2:00 PM','shop',0),
     mk('RH-24701','u4',[['tables',4]],-5,-4,'cancelled','9:00 AM','shop',-10),
   ];
-  return {items:SEED_ITEMS.map(i=>({...i,status:'active'})), users, reservations, session:null, cart:[], period:{start:addDays(TODAY,1), end:addDays(TODAY,2)}};
+  return {items:SEED_ITEMS.map(i=>({...i,status:'active'})), users, reservations, session:null, cart:[], period:{start:addDays(TODAY,1), end:addDays(TODAY,2)}, pricingVersion:PRICING_VERSION};
 }
 let DB;
 try { DB = JSON.parse(localStorage.getItem(KEY)) } catch(e) { DB = null }
 if(!DB || !DB.items) DB = seed();
+if((DB.pricingVersion||0)<PRICING_VERSION){
+  for(const source of SEED_ITEMS){
+    let stored=DB.items.find(i=>i.id===source.id);
+    if(!stored){stored={...source,status:'active'};DB.items.push(stored)}
+    Object.assign(stored,{name:source.name,price:source.price,deposit:source.deposit});
+  }
+  const legacyFins=DB.items.find(i=>i.id==='fins');
+  if(legacyFins){
+    const bookedByDay={};
+    for(const r of DB.reservations||[]){
+      if(!['pending','confirmed','picked_up'].includes(r.status)) continue;
+      const qty=(r.lines||[]).filter(l=>l.itemId==='fins').reduce((sum,l)=>sum+l.qty,0);
+      if(qty) for(const day of eachDay(r.start,r.end)) bookedByDay[day]=(bookedByDay[day]||0)+qty;
+    }
+    const peakBooked=Math.max(0,...Object.values(bookedByDay));
+    const legacyStock=Math.max(legacyFins.stock||0,peakBooked);
+    const plasticStock=Math.max(Math.min(8,legacyStock),peakBooked);
+    const remaining=Math.max(0,legacyStock-plasticStock);
+    DB.items.find(i=>i.id==='fins-plastic').stock=plasticStock;
+    DB.items.find(i=>i.id==='fins-plastic').status=legacyFins.status||'active';
+    DB.items.find(i=>i.id==='fins-carbon').stock=Math.floor(remaining/2);
+    DB.items.find(i=>i.id==='fins-ice').stock=remaining-Math.floor(remaining/2);
+    for(const r of DB.reservations||[]) for(const line of r.lines||[]) if(line.itemId==='fins'){
+      line.itemId='fins-plastic';
+      line.price=DB.items.find(i=>i.id==='fins-plastic').price;
+      line.deposit=DB.items.find(i=>i.id==='fins-plastic').deposit;
+    }
+    for(const line of DB.cart||[]) if(line.itemId==='fins') line.itemId='fins-plastic';
+    DB.items=DB.items.filter(i=>i.id!=='fins');
+  }
+  for(const r of DB.reservations||[]) for(const line of r.lines||[]){
+    const source=SEED_ITEMS.find(i=>i.id===line.itemId);
+    if(source) Object.assign(line,{price:source.price,deposit:source.deposit});
+  }
+  DB.pricingVersion=PRICING_VERSION;
+  try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}
+}
 if(DB.period.start < TODAY) DB.period = {start:addDays(TODAY,1), end:addDays(TODAY,2)};
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)) }catch(e){} }
 
-const UI = {view:'home', cat:'all', q:'', checkout:null, lastCode:null, adminTab:'overview', resFilter:'all', resQ:'', authMode:'login', authNext:null, acctTab:'reservations', menu:false, sort:'popular'};
+const UI = {view:'home', cat:'all', q:'', checkout:null, lastCode:null, adminTab:'overview', resFilter:'all', resQ:'', authMode:'login', authNext:null, acctTab:'reservations', menu:false, sort:'popular', packageFin:'fins-plastic'};
 
 const item = id => DB.items.find(i=>i.id===id);
+const packageAmounts = pack => {
+  const baseFin=SEED_ITEMS.find(i=>i.id==='fins-plastic');
+  const selectedFin=item(UI.packageFin)||baseFin;
+  const qty=pack.items.find(([id])=>id==='fins-plastic')?.[1]||0;
+  return {price:pack.price+qty*(selectedFin.price-baseFin.price),deposit:pack.deposit+qty*(selectedFin.deposit-baseFin.deposit)};
+};
 const user = id => DB.users.find(u=>u.id===id);
 const me = () => DB.session ? user(DB.session) : null;
 const catName = id => (CATS.find(c=>c.id===id)||{}).name || id;
 const HOLD = ['pending','confirmed','picked_up'];
 const STATUS = {pending:['Awaiting confirmation','warn'], confirmed:['Confirmed','info'], picked_up:['Picked up','ok'], returned:['Returned','neutral'], cancelled:['Cancelled','bad']};
 const statusPill = s => `<span class="pill ${STATUS[s][1]}">${STATUS[s][0]}</span>`;
-const resTotal = r => r.lines.reduce((a,l)=>a+l.price*l.qty,0)*rentalDays(r.start,r.end);
-const resDeposit = r => r.lines.reduce((a,l)=>a+(item(l.itemId)?.deposit||0)*l.qty,0);
+const resRentalSubtotal = r => r.lines.reduce((a,l)=>a+(l.price??item(l.itemId)?.price??0)*l.qty,0)*rentalDays(r.start,r.end);
+const resDeposit = r => r.lines.reduce((a,l)=>a+(l.deposit??item(l.itemId)?.deposit??0)*l.qty,0);
+const resTotal = r => resRentalSubtotal(r)+resDeposit(r);
 
 /* ---------- double-booking engine ---------- */
 function bookedOn(itemId, day, exclude){
@@ -846,6 +954,17 @@ function pageHome(){
   </div></section>
 
   <section class="section" style="padding-top:0"><div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">Ready-made bundles</div><h2>Rental packages</h2><p>Curated gear bundles for your event, shoot or day out, with one clear daily rate and refundable deposit.</p></div></div>
+    <div class="package-grid">${RENTAL_PACKAGES.map(pack=>{const amounts=packageAmounts(pack);return `<article class="package-card">
+      <div><div class="eyebrow">${catName(pack.cat)}</div><h3>${pack.name}</h3></div>
+      <div><div class="package-price">${peso(amounts.price)} <small>/ day</small></div><div class="package-deposit"><span>Refundable deposit</span><b>${peso(amounts.deposit)}</b></div></div>
+      <ul class="package-includes">${pack.items.map(([id,qty])=>id==='fins-plastic'?`<li class="package-fin-choice"><label for="package-fin">Choose included fins · × ${qty}</label><select class="input" id="package-fin" data-package-fin aria-label="Choose fins included in the beach package">${['fins-plastic','fins-carbon','fins-ice','fins-short'].map(finId=>{const fin=item(finId);return `<option value="${finId}" ${UI.packageFin===finId?'selected':''}>${esc(fin.name)} · ${peso(fin.price)}/day · ${peso(fin.deposit)} deposit</option>`}).join('')}</select></li>`:`<li><span>${esc(item(id).name)}</span><b>× ${qty}</b></li>`).join('')}</ul>
+      <button class="btn btn-primary" data-cat-go="${pack.cat}">Reserve Package</button>
+    </article>`}).join('')}</div>
+    <p class="package-note">The beach package includes four pairs of your selected fin type. Package totals update with that choice; individual rentals are priced separately in the catalog.</p>
+  </div></section>
+
+  <section class="section" style="padding-top:0"><div class="wrap">
     <div class="sec-head"><div><div class="eyebrow">Most reserved</div><h2>Popular with <span class="serif">GenSan renters</span></h2></div><button class="btn btn-ghost" data-go="catalog">See full catalog ${arr}</button></div>
     <div class="grid">${popular.map(productCard).join('')}</div>
   </div></section>
@@ -893,25 +1012,27 @@ function stepsHtml(){
 }
 function pickupBand(){
   return `<section class="pickup-band"><div class="wrap">
-    <div><div class="eyebrow">Pickup policy</div><h2 style="margin-top:8px">All reservations are collected at our physical shop</h2>
+    <div><div class="eyebrow">Pickup &amp; rental policies</div><h2 style="margin-top:8px">Shop pickup only</h2>
       <ul class="policy-list">
-        <li>${I.id}<span><b style="color:#fff">Valid government ID required.</b> The ID holder must match the account name on the reservation.</span></li>
-        <li>${I.shield}<span><b style="color:#fff">Refundable security deposit</b> is paid at pickup and returned after the gear is checked in good condition.</span></li>
-        <li>${I.box}<span><b style="color:#fff">Inspect before you leave.</b> We test every unit with you at the counter and note its condition.</span></li>
-        <li>${I.store}<span><b style="color:#fff">No delivery or shipping.</b> This keeps high-value equipment secure and accounted for.</span></li>
+        <li>${I.store}<span><b style="color:#fff">Shop pickup only:</b> All reservations must be collected at our physical shop. No delivery or shipping is available.</span></li>
+        <li>${I.id}<span><b style="color:#fff">Valid government-issued ID:</b> Customers must present a valid ID and sign a rental agreement before equipment release. The ID holder must match the reservation account name.</span></li>
+        <li>${I.shield}<span><b style="color:#fff">Refundable security deposit:</b> A deposit equal to 50% of the rental fee is required for individual equipment and packages. It will be refunded after inspection, minus any applicable deductions.</span></li>
+        <li>${I.cal}<span><b style="color:#fff">Late-return charges:</b> Delays up to 1 hour incur a 5% penalty. Delays exceeding 1 hour up to 2 hours incur a total 10% penalty. Delays exceeding 2 hours incur one full additional day's rental fee, with another daily charge for each succeeding 24-hour period.</span></li>
+        <li>${I.box}<span><b style="color:#fff">Damage or loss:</b> Customers are responsible for documented repair or replacement costs that exceed their security deposit.</span></li>
+        <li>${I.box}<span><b style="color:#fff">Equipment inspection:</b> Customers must inspect the equipment with staff at pickup and return it in good condition.</span></li>
       </ul></div>
     <div class="shop-card"><h3>RentHub GenSan Pickup Counter</h3>
       <p>Pioneer Avenue, Dadiangas West<br>General Santos City, South Cotabato 9500</p>
-      <dl class="hours"><dt>Mon – Sat</dt><dd>8:00 AM – 6:00 PM</dd><dt>Sunday</dt><dd>9:00 AM – 3:00 PM</dd><dt>Phone</dt><dd>(083) 552 0000</dd><dt>Email</dt><dd>hello@renthubgensan.ph</dd></dl>
+      <dl class="hours"><dt>Mon – Sat</dt><dd>8:00 AM – 6:00 PM</dd><dt>Sunday</dt><dd>9:00 AM – 3:00 PM</dd><dt>Phone</dt><dd>09920372031</dd><dt>Email</dt><dd>hello@renthubgensan.ph</dd></dl>
       <p style="font-size:12.5px;color:#9FB2CF">Address and contact details are placeholders for this preview.</p>
     </div>
   </div></section>`;
 }
 function productCard(it){
   return `<article class="card">
-    <button class="art" data-cat="${it.cat}" data-item="${it.id}" aria-label="View ${esc(it.name)}"><svg viewBox="0 0 160 120" aria-hidden="true">${ART[it.id]||ART.tent}</svg><span class="tag">${availPill(it)}</span></button>
+    <button class="art${equipmentImages(it.id).length>1?' paired':''}" data-cat="${it.cat}" data-item="${it.id}" aria-label="View ${esc(it.name)}">${equipmentPhotos(it.id)}<span class="tag">${availPill(it)}</span></button>
     <div class="card-body"><span class="card-cat">${catName(it.cat)}</span><h3>${esc(it.name)}</h3><p class="desc">${esc(it.desc)}</p>
-      <div class="card-foot"><span class="price num">${peso(it.price)} <small>/ ${esc(it.unit)} / day</small></span>
+      <div class="card-foot"><span class="price num">${peso(it.price)} <small>Daily Rental Rate / ${esc(it.unit)} / day</small><small><br>Refundable Security Deposit: ${peso(it.deposit)}</small></span>
       <button class="btn btn-primary btn-sm" data-item="${it.id}">Reserve</button></div></div></article>`;
 }
 function periodFields(prefix){
@@ -948,7 +1069,7 @@ function itemModal(id){
     <span class="card-cat">${catName(it.cat)}</span><h2>${esc(it.name)}</h2>
     <p class="muted">${esc(it.desc)}</p>
     <ul class="incl">${(it.includes||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
-    <div class="kv"><div><small>Rate</small><b>${peso(it.price)} / ${esc(it.unit)} / day</b></div><div><small>Deposit</small><b>${peso(it.deposit)} / ${esc(it.unit)}</b></div></div>
+    <div class="kv"><div><small>Daily Rental Rate</small><b>${peso(it.price)} / ${esc(it.unit)} / day</b></div><div><small>Refundable Security Deposit</small><b>${peso(it.deposit)} / ${esc(it.unit)}</b></div></div>
     ${periodFields('md')}
     <div class="row" style="justify-content:space-between">${availPill(it)}<span class="muted num" style="font-size:13px">${it.stock} in our inventory${inCart?` · ${inCart} in your cart`:''}</span></div>
     ${it.id==='vest'?`<div class="field"><label for="md-size">Sizes needed</label><input class="input" id="md-size" placeholder="e.g. 2 kids, 2 adults"></div>`:''}
@@ -958,7 +1079,7 @@ function itemModal(id){
     </div>
     ${max?`<button class="btn btn-primary" id="addCart">${I.cart} Add to cart</button>`:`<div class="notice bad">${I.info}<span>${it.status!=='active'?'This item is under maintenance and cannot be reserved right now.':inCart?'You already have every free unit for these dates in your cart.':'All units are booked for these dates. Try a different pickup or return date.'}</span></div>`}
   </div></div>`);
-  const upd=()=>{ const q=Math.min(max,Math.max(1,+$('#mq').value||1)); $('#mq').value=max?q:0; $('#mqTotal').textContent=max?`${peso(it.price*q*d)} for ${d} day${d>1?'s':''}`:''; };
+  const upd=()=>{ const q=Math.min(max,Math.max(1,+$('#mq').value||1)); $('#mq').value=max?q:0; $('#mqTotal').textContent=max?`Rental subtotal: ${peso(it.price*q*d)} · Refundable Security Deposit: ${peso(it.deposit*q)}`:''; };
   upd(); $('#mq').oninput=upd;
   document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{ $('#mq').value=(+$('#mq').value)+(+b.dataset.q); upd(); });
   if($('#addCart')) $('#addCart').onclick=()=>{
@@ -982,15 +1103,15 @@ function pageCart(){
       <div class="panel"><div class="panel-h"><h3>Rental period</h3><span class="muted num">${t.d} day${t.d>1?'s':''} · all items share these dates</span></div><div class="panel-b">${periodFields('cp')}</div></div>
       ${cf.length?`<div class="notice bad">${I.info}<span><b>Some items aren't available for these dates.</b> ${cf.map(c=>`${esc(item(c.id).name)}: you need ${c.need}, only ${c.have} free`).join('; ')}. Lower the quantity or change dates.</span></div>`:''}
       <div class="panel"><div class="panel-h"><h3>Equipment</h3><button class="link-btn" data-go="catalog">Add more items</button></div>
-        ${DB.cart.map((l,i)=>{const it=item(l.itemId);const a=available(it.id,DB.period.start,DB.period.end);const bad=a<l.qty;return `<div class="line">${art(it.id,it.cat)}<div style="min-width:0"><h4>${esc(it.name)}</h4><div class="line-meta num">${peso(it.price)} / ${esc(it.unit)} / day · deposit ${peso(it.deposit)}${l.note?` · Sizes: ${esc(l.note)}`:''}</div><div style="margin-top:6px">${bad?`<span class="pill bad">${a} free for these dates</span>`:`<span class="pill ok">Available</span>`}</div></div>
-          <div class="line-right"><div class="qty"><button data-cq="${i}" data-d="-1" aria-label="Decrease">−</button><input value="${l.qty}" data-cqi="${i}" type="number" min="1" aria-label="Quantity"><button data-cq="${i}" data-d="1" aria-label="Increase">+</button></div><span class="num" style="font-weight:700">${peso(it.price*l.qty*t.d)}</span><button class="link-btn" data-rm="${i}" style="font-size:13px">Remove</button></div></div>`}).join('')}
+        ${DB.cart.map((l,i)=>{const it=item(l.itemId);const a=available(it.id,DB.period.start,DB.period.end);const bad=a<l.qty;return `<div class="line">${art(it.id,it.cat)}<div style="min-width:0"><h4>${esc(it.name)}</h4><div class="line-meta num">Daily Rental Rate: ${peso(it.price)} / ${esc(it.unit)} / day · Refundable Security Deposit: ${peso(it.deposit)} / ${esc(it.unit)}${l.note?` · Sizes: ${esc(l.note)}`:''}</div><div style="margin-top:6px">${bad?`<span class="pill bad">${a} free for these dates</span>`:`<span class="pill ok">Available</span>`}</div></div>
+          <div class="line-right"><div class="qty"><button data-cq="${i}" data-d="-1" aria-label="Decrease">−</button><input value="${l.qty}" data-cqi="${i}" type="number" min="1" aria-label="Quantity"><button data-cq="${i}" data-d="1" aria-label="Increase">+</button></div><span class="num" style="font-weight:700"><small>Rental subtotal</small> ${peso(it.price*l.qty*t.d)}</span><button class="link-btn" data-rm="${i}" style="font-size:13px">Remove</button></div></div>`}).join('')}
       </div>
     </div>
     <aside class="panel summary"><div class="panel-h"><h3>Summary</h3></div><div class="panel-b">
-      <div class="sum-row"><span>Rental (${peso(t.perDay)} × ${t.d} day${t.d>1?'s':''})</span><b>${peso(t.rent)}</b></div>
-      <div class="sum-row"><span>Refundable deposit</span><b>${peso(t.dep)}</b></div>
+      <div class="sum-row"><span>Rental subtotal (${peso(t.perDay)} × ${t.d} day${t.d>1?'s':''})</span><b>${peso(t.rent)}</b></div>
+      <div class="sum-row"><span>Refundable Security Deposit</span><b>${peso(t.dep)}</b></div>
       <div class="sum-row"><span>Delivery</span><span class="muted">Not offered · pickup only</span></div>
-      <div class="sum-row total"><span>Due at pickup</span><span>${peso(t.rent+t.dep)}</span></div>
+      <div class="sum-row total"><span>Total Amount Due</span><span>${peso(t.rent+t.dep)}</span></div>
       <div class="notice gold" style="margin-top:14px">${I.store}<span>Pick up on <b>${fmt(DB.period.start)}</b> and return by <b>${fmt(DB.period.end)}</b>, 6:00 PM, at our General Santos City shop.</span></div>
       <button class="btn btn-primary" style="width:100%;margin-top:14px" id="toCheckout" ${cf.length?'disabled':''}>Continue to checkout</button>
       ${me()?'':'<p class="muted" style="font-size:13px;text-align:center;margin-top:8px">You will be asked to log in or create an account.</p>'}
@@ -1023,10 +1144,10 @@ function pageCheckout(){
   </form>
   <aside class="panel summary"><div class="panel-h"><h3>Your reservation</h3><button class="link-btn" data-go="cart">Edit</button></div><div class="panel-b">
     <div class="sum-row"><span class="muted">Dates</span><b>${fmtShort(DB.period.start)} – ${fmtShort(DB.period.end)}</b></div>
-    ${DB.cart.map(l=>{const it=item(l.itemId);return `<div class="sum-row"><span>${l.qty} × ${esc(it.name)}</span><span>${peso(it.price*l.qty*t.d)}</span></div>`}).join('')}
+    ${DB.cart.map(l=>{const it=item(l.itemId);return `<div class="sum-row"><span>Rental · ${l.qty} × ${esc(it.name)}</span><span>${peso(it.price*l.qty*t.d)}</span></div>`}).join('')}
     <div class="sum-row" style="border-top:1px solid var(--line);margin-top:8px;padding-top:10px"><span>Rental subtotal</span><b>${peso(t.rent)}</b></div>
-    <div class="sum-row"><span>Refundable deposit</span><b>${peso(t.dep)}</b></div>
-    <div class="sum-row total"><span>Total</span><span>${peso(t.rent+t.dep)}</span></div>
+    <div class="sum-row"><span>Refundable Security Deposit</span><b>${peso(t.dep)}</b></div>
+    <div class="sum-row total"><span>Total Amount Due</span><span>${peso(t.rent+t.dep)}</span></div>
   </div></aside></div>`;
 }
 function placeOrder(){
@@ -1049,7 +1170,7 @@ function pageConfirm(){
     <div class="code-big">${r.code}</div><p class="muted" style="font-size:13px">Show this code at the counter</p></div>
     <div class="panel-b" style="border-top:1px solid var(--line)"><div class="kv">
       <div><small>Pickup</small><b>${fmt(r.start)} · ${r.slot}</b></div><div><small>Return by</small><b>${fmt(r.end)} · 6:00 PM</b></div>
-      <div><small>Rental total</small><b>${peso(resTotal(r))}</b></div><div><small>Deposit at pickup</small><b>${peso(resDeposit(r))}</b></div></div>
+      <div><small>Rental subtotal</small><b>${peso(resRentalSubtotal(r))}</b></div><div><small>Refundable Security Deposit</small><b>${peso(resDeposit(r))}</b></div><div><small>Total Amount Due</small><b>${peso(resTotal(r))}</b></div></div>
       <div class="notice gold" style="margin-top:14px">${I.id}<span>Bring a valid government ID under <b>${esc(user(r.userId).name)}</b>. Pickup is at our General Santos City shop only.</span></div>
       <div class="row" style="justify-content:center;margin-top:18px"><button class="btn btn-primary" data-go="account">Track my reservations</button><button class="btn btn-ghost" data-go="catalog">Keep browsing</button></div>
     </div></div></div>`;
@@ -1096,7 +1217,7 @@ function resCard(r, admin){
   const canCancel=['pending','confirmed'].includes(r.status) && r.start>TODAY;
   return `<article class="res-card">
     <div class="res-top"><div class="row"><span class="code">${r.code}</span>${statusPill(r.status)}</div>
-      <div class="res-dates num"><span><b>Pickup</b>${fmt(r.start)} · ${r.slot}</span><span><b>Return</b>${fmt(r.end)}</span><span><b>Total</b>${peso(resTotal(r))}</span></div></div>
+      <div class="res-dates num"><span><b>Pickup</b>${fmt(r.start)} · ${r.slot}</span><span><b>Return</b>${fmt(r.end)}</span><span><b>Rental subtotal</b>${peso(resRentalSubtotal(r))}</span><span><b>Refundable Security Deposit</b>${peso(resDeposit(r))}</span><span><b>Total Amount Due</b>${peso(resTotal(r))}</span></div></div>
     <div class="res-items">${r.lines.map(l=>{const it=item(l.itemId)||{name:'Removed item',cat:'events',id:''};return `<span class="res-item">${art(it.id,it.cat)}${l.qty} × ${esc(it.name)}</span>`}).join('')}</div>
     ${r.status!=='cancelled'?`<div class="timeline">${steps.map((s,i)=>`<div class="tl ${i<idx||(i===idx&&r.status==='returned')?'done':i===idx?'cur':''}"><i></i>${s[1]}</div>`).join('')}</div>`:''}
     ${canCancel?`<div class="res-actions"><span class="muted" style="font-size:13px;margin-right:auto">Free cancellation until the day before pickup</span><button class="btn btn-danger btn-sm" data-cancel="${r.code}">Cancel reservation</button></div>`:''}
@@ -1105,7 +1226,7 @@ function resCard(r, admin){
 function pageAccount(){
   const u=me(); const mine=DB.reservations.filter(r=>r.userId===u.id);
   const upcoming=mine.filter(r=>['pending','confirmed'].includes(r.status)), active=mine.filter(r=>r.status==='picked_up'), past=mine.filter(r=>['returned','cancelled'].includes(r.status));
-  const spent=mine.filter(r=>r.status!=='cancelled').reduce((a,r)=>a+resTotal(r),0);
+  const spent=mine.filter(r=>r.status!=='cancelled').reduce((a,r)=>a+resRentalSubtotal(r),0);
   const tab=UI.acctTab;
   return `<div class="dash-head"><div class="wrap"><div><div class="eyebrow">Customer dashboard</div><h1 style="font-size:32px;margin-top:6px">Hi, ${esc(u.name.split(' ')[0])}</h1><p class="muted">Track pickups, returns and past rentals.</p></div><div class="row"><button class="btn btn-primary" data-go="catalog">${I.plus} New reservation</button><button class="btn btn-ghost" id="logout">${I.logout} Log out</button></div></div></div>
   <div class="wrap" style="padding-block:24px 64px;display:grid;gap:20px">
@@ -1137,7 +1258,7 @@ function pageAdmin(){
 function adminOverview(){
   const month=TODAY.slice(0,7);
   const live=DB.reservations.filter(r=>r.status!=='cancelled');
-  const rev=live.filter(r=>r.created.slice(0,7)===month||r.start.slice(0,7)===month).reduce((a,r)=>a+resTotal(r),0);
+  const rev=live.filter(r=>r.created.slice(0,7)===month||r.start.slice(0,7)===month).reduce((a,r)=>a+resRentalSubtotal(r),0);
   const pickups=DB.reservations.filter(r=>r.start===TODAY&&['pending','confirmed'].includes(r.status));
   const returns=DB.reservations.filter(r=>r.end===TODAY&&r.status==='picked_up');
   const unitsOut=DB.reservations.filter(r=>r.status==='picked_up').reduce((a,r)=>a+r.lines.reduce((b,l)=>b+l.qty,0),0);
@@ -1166,9 +1287,9 @@ function adminReservations(){
   return `<div><div class="eyebrow">Bookings</div><h1 style="margin-top:4px">Reservations</h1></div>
   <div class="toolbar"><div class="chips">${['all','pending','confirmed','picked_up','returned','cancelled'].map(s=>`<button class="chip ${f===s?'on':''}" data-rf="${s}">${s==='all'?'All':STATUS[s][0]} <span class="num">(${counts(s)})</span></button>`).join('')}</div>
     <input class="input" id="resQ" placeholder="Search code or customer" value="${esc(UI.resQ)}" style="max-width:260px"></div>
-  <div class="panel tbl-wrap"><table><thead><tr><th>Code</th><th>Customer</th><th>Items</th><th>Pickup → Return</th><th class="num">Total</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+  <div class="panel tbl-wrap"><table><thead><tr><th>Code</th><th>Customer</th><th>Items</th><th>Pickup → Return</th><th class="num">Total Amount Due</th><th>Status</th><th>Actions</th></tr></thead><tbody>
   ${list.map(r=>{const u=user(r.userId);const next={pending:[['confirmed','Confirm','btn-primary']],confirmed:[['picked_up','Release','btn-gold']],picked_up:[['returned','Check in','btn-ghost']],returned:[],cancelled:[['pending','Restore','btn-ghost']]}[r.status];
-    return `<tr><td class="mono" style="font-weight:600">${r.code}</td><td><b>${esc(u.name)}</b><div class="muted" style="font-size:12.5px">${esc(u.phone)}</div></td><td style="min-width:200px">${r.lines.map(l=>`${l.qty}× ${esc(item(l.itemId)?.name||'—')}`).join('<br>')}</td><td class="num" style="white-space:nowrap">${fmtShort(r.start)} → ${fmtShort(r.end)}<div class="muted" style="font-size:12.5px">${r.slot} · ${r.pay==='gcash'?'GCash 20%':'Pay at shop'}</div></td><td class="num">${peso(resTotal(r))}</td><td>${statusPill(r.status)}</td>
+    return `<tr><td class="mono" style="font-weight:600">${r.code}</td><td><b>${esc(u.name)}</b><div class="muted" style="font-size:12.5px">${esc(u.phone)}</div></td><td style="min-width:200px">${r.lines.map(l=>`${l.qty}× ${esc(item(l.itemId)?.name||'—')}`).join('<br>')}</td><td class="num" style="white-space:nowrap">${fmtShort(r.start)} → ${fmtShort(r.end)}<div class="muted" style="font-size:12.5px">${r.slot} · ${r.pay==='gcash'?'GCash 20%':'Pay at shop'}</div></td><td class="num">${peso(resTotal(r))}<div class="muted" style="font-size:12px">Rental: ${peso(resRentalSubtotal(r))}<br>Refundable Security Deposit: ${peso(resDeposit(r))}</div></td><td>${statusPill(r.status)}</td>
     <td><div class="row" style="flex-wrap:nowrap">${next.map(([s,l,c])=>`<button class="btn ${c} btn-sm" data-st="${r.code}|${s}">${l}</button>`).join('')}${['pending','confirmed'].includes(r.status)?`<button class="btn btn-danger btn-sm" data-st="${r.code}|cancelled">Cancel</button>`:''}</div></td></tr>`}).join('')||'<tr><td colspan="7" class="muted" style="text-align:center;padding:32px">No reservations match.</td></tr>'}
   </tbody></table></div>`;
 }
@@ -1183,7 +1304,7 @@ function setStatus(code, s){
 }
 function adminEquipment(){
   return `<div class="row" style="justify-content:space-between"><div><div class="eyebrow">Catalog</div><h1 style="margin-top:4px">Equipment & inventory</h1></div><button class="btn btn-primary" id="addItem">${I.plus} Add equipment</button></div>
-  <div class="panel tbl-wrap"><table><thead><tr><th>Item</th><th>Category</th><th class="num">Rate / day</th><th class="num">Deposit</th><th class="num">Stock</th><th class="num">Booked today</th><th>Status</th><th></th></tr></thead><tbody>
+  <div class="panel tbl-wrap"><table><thead><tr><th>Item</th><th>Category</th><th class="num">Daily Rental Rate</th><th class="num">Refundable Security Deposit</th><th class="num">Stock</th><th class="num">Booked today</th><th>Status</th><th></th></tr></thead><tbody>
   ${DB.items.map(it=>`<tr><td><div class="cell-item">${art(it.id,it.cat)}<b>${esc(it.name)}</b></div></td><td>${catName(it.cat)}</td><td class="num">${peso(it.price)}</td><td class="num">${peso(it.deposit)}</td><td class="num">${it.stock}</td><td class="num">${bookedOn(it.id,TODAY)}</td><td>${it.status==='active'?'<span class="pill ok">Rentable</span>':'<span class="pill neutral">Maintenance</span>'}</td><td><button class="btn btn-ghost btn-sm" data-edit="${it.id}">Edit</button></td></tr>`).join('')}
   </tbody></table></div>`;
 }
@@ -1193,7 +1314,7 @@ function editItem(id){
   openModal(`<form id="itemForm" class="panel-b stack" style="padding:28px"><h3 style="font-size:22px;padding-right:40px">${id?'Edit '+esc(it.name):'Add equipment'}</h3>
     <div class="field"><label for="e-name">Name</label><input class="input" id="e-name" value="${esc(it.name)}" required></div>
     <div class="two"><div class="field"><label for="e-cat">Category</label><select class="input" id="e-cat">${CATS.map(c=>`<option value="${c.id}" ${it.cat===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div><div class="field"><label for="e-unit">Unit label</label><input class="input" id="e-unit" value="${esc(it.unit)}"></div></div>
-    <div class="two"><div class="field"><label for="e-price">Rate per day (₱)</label><input class="input" id="e-price" type="number" min="0" value="${it.price}"></div><div class="field"><label for="e-dep">Deposit (₱)</label><input class="input" id="e-dep" type="number" min="0" value="${it.deposit}"></div></div>
+    <div class="two"><div class="field"><label for="e-price">Daily Rental Rate (₱)</label><input class="input" id="e-price" type="number" min="0" value="${it.price}"></div><div class="field"><label for="e-dep">Refundable Security Deposit (₱)</label><input class="input" id="e-dep" type="number" min="0" value="${it.deposit}"></div></div>
     <div class="two"><div class="field"><label for="e-stock">Units in inventory</label><input class="input" id="e-stock" type="number" min="0" value="${it.stock}"></div><div class="field"><label for="e-status">Status</label><select class="input" id="e-status"><option value="active" ${it.status==='active'?'selected':''}>Rentable</option><option value="maintenance" ${it.status!=='active'?'selected':''}>Under maintenance</option></select></div></div>
     ${id?`<p class="muted" style="font-size:13px">Peak booked in the next 60 days: <b class="num">${maxBooked}</b> units. Stock can't go below this.</p>`:''}
     <div class="field"><label for="e-desc">Description</label><textarea class="input" id="e-desc" rows="3">${esc(it.desc)}</textarea></div>
@@ -1219,7 +1340,7 @@ function adminCustomers(){
   const cs=DB.users.filter(u=>u.role==='customer');
   return `<div><div class="eyebrow">Accounts</div><h1 style="margin-top:4px">Customers</h1></div>
   <div class="panel tbl-wrap"><table><thead><tr><th>Customer</th><th>Mobile</th><th>Joined</th><th class="num">Reservations</th><th class="num">Active</th><th class="num">Lifetime rentals</th></tr></thead><tbody>
-  ${cs.map(u=>{const rs=DB.reservations.filter(r=>r.userId===u.id);return `<tr><td><div class="row" style="flex-wrap:nowrap"><span class="avatar">${esc(initials(u.name))}</span><span><b>${esc(u.name)}</b><div class="muted" style="font-size:12.5px">${esc(u.email)}</div></span></div></td><td class="num">${esc(u.phone)}</td><td class="num">${fmt(u.joined)}</td><td class="num">${rs.length}</td><td class="num">${rs.filter(r=>HOLD.includes(r.status)).length}</td><td class="num">${peso(rs.filter(r=>r.status!=='cancelled').reduce((a,r)=>a+resTotal(r),0))}</td></tr>`}).join('')}
+  ${cs.map(u=>{const rs=DB.reservations.filter(r=>r.userId===u.id);return `<tr><td><div class="row" style="flex-wrap:nowrap"><span class="avatar">${esc(initials(u.name))}</span><span><b>${esc(u.name)}</b><div class="muted" style="font-size:12.5px">${esc(u.email)}</div></span></div></td><td class="num">${esc(u.phone)}</td><td class="num">${fmt(u.joined)}</td><td class="num">${rs.length}</td><td class="num">${rs.filter(r=>HOLD.includes(r.status)).length}</td><td class="num">${peso(rs.filter(r=>r.status!=='cancelled').reduce((a,r)=>a+resRentalSubtotal(r),0))}</td></tr>`}).join('')}
   </tbody></table></div>`;
 }
 
@@ -1256,6 +1377,7 @@ function bind(){
   const pf=$('#profForm'); if(pf) pf.onsubmit=e=>{e.preventDefault(); const u=me(); u.name=$('#p-name').value.trim()||u.name; u.phone=$('#p-phone').value.trim()||u.phone; save(); render(); toast('Profile saved');};
   const rq=$('#resQ'); if(rq) rq.oninput=()=>{UI.resQ=rq.value; const p=rq.selectionStart; render(); const n=$('#resQ'); n.focus(); n.setSelectionRange(p,p);};
   const ai=$('#addItem'); if(ai) ai.onclick=()=>editItem(null);
+  document.querySelectorAll('[data-package-fin]').forEach(select=>select.onchange=()=>{UI.packageFin=select.value;render();});
 }
 function setPeriod(start,end,quiet){
   if(!start) start=DB.period.start; if(!end) end=DB.period.end;

@@ -37,5 +37,5 @@ All reservations are picked up at the physical shop. The site has no delivery or
 ## Notes
 
 - This is a front-end mockup. The data is sample data saved in the browser's `localStorage`, and there is no backend yet.
-- The address, phone number, testimonials and prices are placeholders.
+- The address, phone number and testimonials are placeholders. Equipment rates and refundable deposits are configured in the catalog data in `index.html`.
 - Static site: open `index.html` directly, or deploy the folder to any static host (it's deployed on Vercel).
