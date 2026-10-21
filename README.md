@@ -37,5 +37,7 @@ All reservations are picked up at the physical shop. The site has no delivery or
 ## Notes
 
 - This is a front-end mockup. The data is sample data saved in the browser's `localStorage`, and there is no backend yet.
-- The address, phone number and testimonials are placeholders. Equipment rates and refundable deposits are configured in the catalog data in `index.html`.
+- The address, email and testimonials are placeholders.
+- Prices, deposits and packages are set near the top of the script in `index.html` (`SEED_ITEMS` and `RENTAL_PACKAGES`). After changing a price, raise `PRICING_VERSION` by 1 so browsers load the new sample data.
+- Rental packages are applied automatically: when the cart holds every item of a package, the cart shows the package price.
 - Static site: open `index.html` directly, or deploy the folder to any static host (it's deployed on Vercel).
