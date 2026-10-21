@@ -188,6 +188,7 @@ select option{color:var(--ink);background:var(--surface)}
 .card p.desc{font-size:13.5px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .price{font-family:var(--f-display);font-weight:800;font-size:20px}
 .price small{font-family:var(--f-body);font-weight:500;font-size:13px;color:var(--muted)}
+.price-dep{display:block;font-size:12px}
 .card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:6px}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
 .pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
@@ -365,7 +366,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .foot ul button:hover{color:var(--ink)}
 .foot-bottom{border-top:1px solid var(--line)}
 .foot-bottom .wrap{display:flex;justify-content:space-between;padding-block:16px;font-size:12.5px;color:var(--muted);gap:12px;flex-wrap:wrap}
-.preview-flag{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--ink);color:var(--bg);font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;opacity:.85}
+.preview-flag{background:var(--ink);color:var(--bg);font-size:12px;font-weight:600;padding:6px 12px;text-align:center}
 
 /* Toast */
 .toasts{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:200;display:grid;gap:8px;max-width:min(380px,calc(100vw - 32px))}
@@ -1019,7 +1020,7 @@ function productCard(it){
   return `<article class="card">
     <button class="art${equipmentImages(it.id).length>1?' paired':''}" data-cat="${it.cat}" data-item="${it.id}" aria-label="View ${esc(it.name)}">${equipmentPhotos(it.id)}<span class="tag">${availPill(it)}</span></button>
     <div class="card-body"><span class="card-cat">${catName(it.cat)}</span><h3>${esc(it.name)}</h3><p class="desc">${esc(it.desc)}</p>
-      <div class="card-foot"><span class="price num">${peso(it.price)} <small>/ ${esc(it.unit)} / day</small><small><br>Refundable deposit: ${peso(it.deposit)}</small></span>
+      <div class="card-foot"><span class="price num">${peso(it.price)} <small>/ ${esc(it.unit)} / day</small><small class="price-dep">${peso(it.deposit)} refundable deposit</small></span>
       <button class="btn btn-primary btn-sm" data-item="${it.id}">Reserve</button></div></div></article>`;
 }
 function periodFields(prefix){
