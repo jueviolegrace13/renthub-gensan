@@ -799,63 +799,50 @@ function seed(){
 let DB;
 try { DB = JSON.parse(localStorage.getItem(KEY)) } catch(e) { DB = null }
 if(!DB || !DB.items) DB = seed();
-if((DB.pricingVersion||0)<PRICING_VERSION){
-  for(const source of SEED_ITEMS){
-    let stored=DB.items.find(i=>i.id===source.id);
-    if(!stored){stored={...source,status:'active'};DB.items.push(stored)}
-    Object.assign(stored,{name:source.name,price:source.price,deposit:source.deposit});
-  }
-  const legacyFins=DB.items.find(i=>i.id==='fins');
-  if(legacyFins){
-    const bookedByDay={};
-    for(const r of DB.reservations||[]){
-      if(!['pending','confirmed','picked_up'].includes(r.status)) continue;
-      const qty=(r.lines||[]).filter(l=>l.itemId==='fins').reduce((sum,l)=>sum+l.qty,0);
-      if(qty) for(const day of eachDay(r.start,r.end)) bookedByDay[day]=(bookedByDay[day]||0)+qty;
-    }
-    const peakBooked=Math.max(0,...Object.values(bookedByDay));
-    const legacyStock=Math.max(legacyFins.stock||0,peakBooked);
-    const plasticStock=Math.max(Math.min(8,legacyStock),peakBooked);
-    const remaining=Math.max(0,legacyStock-plasticStock);
-    DB.items.find(i=>i.id==='fins-plastic').stock=plasticStock;
-    DB.items.find(i=>i.id==='fins-plastic').status=legacyFins.status||'active';
-    DB.items.find(i=>i.id==='fins-carbon').stock=Math.floor(remaining/2);
-    DB.items.find(i=>i.id==='fins-ice').stock=remaining-Math.floor(remaining/2);
-    for(const r of DB.reservations||[]) for(const line of r.lines||[]) if(line.itemId==='fins'){
-      line.itemId='fins-plastic';
-      line.price=DB.items.find(i=>i.id==='fins-plastic').price;
-      line.deposit=DB.items.find(i=>i.id==='fins-plastic').deposit;
-    }
-    for(const line of DB.cart||[]) if(line.itemId==='fins') line.itemId='fins-plastic';
-    DB.items=DB.items.filter(i=>i.id!=='fins');
-  }
-  for(const r of DB.reservations||[]) for(const line of r.lines||[]){
-    const source=SEED_ITEMS.find(i=>i.id===line.itemId);
-    if(source) Object.assign(line,{price:source.price,deposit:source.deposit});
-  }
-  DB.pricingVersion=PRICING_VERSION;
-  try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}
-}
+// When the price list changes, start again from fresh sample data (prototype only).
+if((DB.pricingVersion||0)<PRICING_VERSION) DB = seed();
 if(DB.period.start < TODAY) DB.period = {start:addDays(TODAY,1), end:addDays(TODAY,2)};
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)) }catch(e){} }
 
 const UI = {view:'home', cat:'all', q:'', checkout:null, lastCode:null, adminTab:'overview', resFilter:'all', resQ:'', authMode:'login', authNext:null, acctTab:'reservations', menu:false, sort:'popular', packageFin:'fins-plastic'};
 
 const item = id => DB.items.find(i=>i.id===id);
-const packageAmounts = pack => {
+const FIN_IDS = ['fins-plastic','fins-carbon','fins-ice','fins-short'];
+const packageAmounts = (pack, finId=UI.packageFin) => {
   const baseFin=SEED_ITEMS.find(i=>i.id==='fins-plastic');
-  const selectedFin=item(UI.packageFin)||baseFin;
+  const selectedFin=item(finId)||baseFin;
   const qty=pack.items.find(([id])=>id==='fins-plastic')?.[1]||0;
   return {price:pack.price+qty*(selectedFin.price-baseFin.price),deposit:pack.deposit+qty*(selectedFin.deposit-baseFin.deposit)};
 };
+// The items in a package; the beach package's fins become the chosen fin type.
+const packageLines = (pack, finId=UI.packageFin) => pack.items.map(([id,qty])=>[id==='fins-plastic'?finId:id,qty]);
+// Finds complete packages inside the cart and returns how much cheaper each one is per day.
+function packageDiscounts(lines){
+  const left={}; lines.forEach(l=>left[l.itemId]=(left[l.itemId]||0)+l.qty);
+  const found=[];
+  for(const pack of RENTAL_PACKAGES){
+    const fins=pack.items.some(([id])=>id==='fins-plastic')?FIN_IDS:[null];
+    for(const fin of fins){
+      const need=packageLines(pack,fin);
+      while(need.every(([id,qty])=>(left[id]||0)>=qty)){
+        need.forEach(([id,qty])=>left[id]-=qty);
+        const a=packageAmounts(pack,fin);
+        const rent=need.reduce((t,[id,qty])=>t+item(id).price*qty,0)-a.price;
+        const dep=need.reduce((t,[id,qty])=>t+item(id).deposit*qty,0)-a.deposit;
+        found.push({name:pack.name,rent:Math.max(0,rent),dep:Math.max(0,dep)});
+      }
+    }
+  }
+  return found;
+}
 const user = id => DB.users.find(u=>u.id===id);
 const me = () => DB.session ? user(DB.session) : null;
 const catName = id => (CATS.find(c=>c.id===id)||{}).name || id;
 const HOLD = ['pending','confirmed','picked_up'];
 const STATUS = {pending:['Awaiting confirmation','warn'], confirmed:['Confirmed','info'], picked_up:['Picked up','ok'], returned:['Returned','neutral'], cancelled:['Cancelled','bad']};
 const statusPill = s => `<span class="pill ${STATUS[s][1]}">${STATUS[s][0]}</span>`;
-const resRentalSubtotal = r => r.lines.reduce((a,l)=>a+(l.price??item(l.itemId)?.price??0)*l.qty,0)*rentalDays(r.start,r.end);
-const resDeposit = r => r.lines.reduce((a,l)=>a+(l.deposit??item(l.itemId)?.deposit??0)*l.qty,0);
+const resRentalSubtotal = r => (r.lines.reduce((a,l)=>a+(l.price??item(l.itemId)?.price??0)*l.qty,0)-(r.packageRent||0))*rentalDays(r.start,r.end);
+const resDeposit = r => r.lines.reduce((a,l)=>a+(l.deposit??item(l.itemId)?.deposit??0)*l.qty,0)-(r.packageDep||0);
 const resTotal = r => resRentalSubtotal(r)+resDeposit(r);
 
 /* ---------- double-booking engine ---------- */
@@ -959,9 +946,9 @@ function pageHome(){
       <div><div class="eyebrow">${catName(pack.cat)}</div><h3>${pack.name}</h3></div>
       <div><div class="package-price">${peso(amounts.price)} <small>/ day</small></div><div class="package-deposit"><span>Refundable deposit</span><b>${peso(amounts.deposit)}</b></div></div>
       <ul class="package-includes">${pack.items.map(([id,qty])=>id==='fins-plastic'?`<li class="package-fin-choice"><label for="package-fin">Choose included fins · × ${qty}</label><select class="input" id="package-fin" data-package-fin aria-label="Choose fins included in the beach package">${['fins-plastic','fins-carbon','fins-ice','fins-short'].map(finId=>{const fin=item(finId);return `<option value="${finId}" ${UI.packageFin===finId?'selected':''}>${esc(fin.name)} · ${peso(fin.price)}/day · ${peso(fin.deposit)} deposit</option>`}).join('')}</select></li>`:`<li><span>${esc(item(id).name)}</span><b>× ${qty}</b></li>`).join('')}</ul>
-      <button class="btn btn-primary" data-cat-go="${pack.cat}">Reserve Package</button>
+      <button class="btn btn-primary" data-pack="${RENTAL_PACKAGES.indexOf(pack)}">Reserve Package</button>
     </article>`}).join('')}</div>
-    <p class="package-note">The beach package includes four pairs of your selected fin type. Package totals update with that choice; individual rentals are priced separately in the catalog.</p>
+    <p class="package-note">The beach package includes four pairs of your selected fin type. Package totals update with that choice. The package price is applied automatically in your cart.</p>
   </div></section>
 
   <section class="section" style="padding-top:0"><div class="wrap">
@@ -1032,7 +1019,7 @@ function productCard(it){
   return `<article class="card">
     <button class="art${equipmentImages(it.id).length>1?' paired':''}" data-cat="${it.cat}" data-item="${it.id}" aria-label="View ${esc(it.name)}">${equipmentPhotos(it.id)}<span class="tag">${availPill(it)}</span></button>
     <div class="card-body"><span class="card-cat">${catName(it.cat)}</span><h3>${esc(it.name)}</h3><p class="desc">${esc(it.desc)}</p>
-      <div class="card-foot"><span class="price num">${peso(it.price)} <small>Daily Rental Rate / ${esc(it.unit)} / day</small><small><br>Refundable Security Deposit: ${peso(it.deposit)}</small></span>
+      <div class="card-foot"><span class="price num">${peso(it.price)} <small>/ ${esc(it.unit)} / day</small><small><br>Refundable deposit: ${peso(it.deposit)}</small></span>
       <button class="btn btn-primary btn-sm" data-item="${it.id}">Reserve</button></div></div></article>`;
 }
 function periodFields(prefix){
@@ -1088,11 +1075,19 @@ function itemModal(id){
     save(); closeModal(); render(); toast(`Added ${q} × ${it.name} to your cart`);
   };
 }
+function addPackage(pack){
+  for(const [id,qty] of packageLines(pack)){
+    const ex=DB.cart.find(l=>l.itemId===id); if(ex) ex.qty+=qty; else DB.cart.push({itemId:id,qty,note:''});
+  }
+  save(); go('cart'); toast(`${pack.name} package added to your cart`);
+}
 function cartTotals(){
   const d=rentalDays(DB.period.start,DB.period.end);
   const perDay=DB.cart.reduce((a,l)=>a+item(l.itemId).price*l.qty,0);
-  const dep=DB.cart.reduce((a,l)=>a+item(l.itemId).deposit*l.qty,0);
-  return {d,perDay,rent:perDay*d,dep};
+  const packs=packageDiscounts(DB.cart);
+  const packRent=packs.reduce((a,p)=>a+p.rent,0), packDep=packs.reduce((a,p)=>a+p.dep,0);
+  const dep=DB.cart.reduce((a,l)=>a+item(l.itemId).deposit*l.qty,0)-packDep;
+  return {d,perDay:perDay-packRent,rent:(perDay-packRent)*d,dep,packs,packRent,packDep};
 }
 function pageCart(){
   const t=cartTotals(); const cf=conflicts(DB.cart,DB.period.start,DB.period.end);
@@ -1108,6 +1103,7 @@ function pageCart(){
       </div>
     </div>
     <aside class="panel summary"><div class="panel-h"><h3>Summary</h3></div><div class="panel-b">
+      ${t.packs.map(p=>`<div class="sum-row"><span>Package savings · ${esc(p.name)}</span><b class="num" style="color:var(--ok);white-space:nowrap">−${peso(p.rent*t.d)}</b></div>`).join('')}
       <div class="sum-row"><span>Rental subtotal (${peso(t.perDay)} × ${t.d} day${t.d>1?'s':''})</span><b>${peso(t.rent)}</b></div>
       <div class="sum-row"><span>Refundable Security Deposit</span><b>${peso(t.dep)}</b></div>
       <div class="sum-row"><span>Delivery</span><span class="muted">Not offered · pickup only</span></div>
@@ -1145,6 +1141,7 @@ function pageCheckout(){
   <aside class="panel summary"><div class="panel-h"><h3>Your reservation</h3><button class="link-btn" data-go="cart">Edit</button></div><div class="panel-b">
     <div class="sum-row"><span class="muted">Dates</span><b>${fmtShort(DB.period.start)} – ${fmtShort(DB.period.end)}</b></div>
     ${DB.cart.map(l=>{const it=item(l.itemId);return `<div class="sum-row"><span>Rental · ${l.qty} × ${esc(it.name)}</span><span>${peso(it.price*l.qty*t.d)}</span></div>`}).join('')}
+    ${t.packs.map(p=>`<div class="sum-row"><span>Package savings · ${esc(p.name)}</span><b class="num" style="color:var(--ok);white-space:nowrap">−${peso(p.rent*t.d)}</b></div>`).join('')}
     <div class="sum-row" style="border-top:1px solid var(--line);margin-top:8px;padding-top:10px"><span>Rental subtotal</span><b>${peso(t.rent)}</b></div>
     <div class="sum-row"><span>Refundable Security Deposit</span><b>${peso(t.dep)}</b></div>
     <div class="sum-row total"><span>Total Amount Due</span><span>${peso(t.rent+t.dep)}</span></div>
@@ -1157,8 +1154,9 @@ function placeOrder(){
   if(!c.agree){ err.textContent='Please agree to the rental terms to place your reservation.'; err.hidden=false; return; }
   const cf=conflicts(DB.cart,DB.period.start,DB.period.end);
   if(cf.length){ toast('Someone just booked some of these units. Please review your cart.',true); go('cart'); return; }
+  const t=cartTotals();
   let code; do{ code='RH-'+(24830+Math.floor(Math.random()*9000)); }while(DB.reservations.some(r=>r.code===code));
-  DB.reservations.unshift({code,userId:DB.session,lines:DB.cart.map(l=>({itemId:l.itemId,qty:l.qty,price:item(l.itemId).price,note:l.note||''})),start:DB.period.start,end:DB.period.end,status:'pending',slot:c.slot,pay:c.pay,created:TODAY,notes:c.notes});
+  DB.reservations.unshift({code,userId:DB.session,lines:DB.cart.map(l=>({itemId:l.itemId,qty:l.qty,price:item(l.itemId).price,deposit:item(l.itemId).deposit,note:l.note||''})),packageRent:t.packRent,packageDep:t.packDep,start:DB.period.start,end:DB.period.end,status:'pending',slot:c.slot,pay:c.pay,created:TODAY,notes:c.notes});
   const u=me(); u.phone=c.phone;
   DB.cart=[]; UI.checkout=null; UI.lastCode=code; save(); go('confirm');
 }
@@ -1396,6 +1394,7 @@ document.addEventListener('click',e=>{
   if(t.id==='menuBtn'){ UI.menu=!UI.menu; renderHeader(); return; }
   if(d.go){ if(d.go==='how'&&UI.view==='home'){ UI.menu=false; renderHeader(); $('#how').scrollIntoView({behavior:'smooth'}); return;} go(d.go); return; }
   if(d.catGo){ go('catalog',{cat:d.catGo,q:''}); return; }
+  if(d.pack){ addPackage(RENTAL_PACKAGES[+d.pack]); return; }
   if(d.catSet){ UI.cat=d.catSet; render(); return; }
   if(d.item){ itemModal(d.item); return; }
   if(d.cq!==undefined){ const l=DB.cart[+d.cq]; l.qty=Math.max(1,l.qty+(+d.d)); save(); render(); return; }
