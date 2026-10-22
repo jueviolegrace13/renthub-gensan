@@ -211,6 +211,7 @@ select option{color:var(--ink);background:var(--surface)}
 .cat-list button.on{background:var(--gold-soft);color:var(--gold-ink)}
 .cat-list span{font-size:12px;color:var(--muted);font-weight:600}
 .period-note{font-size:13px;background:var(--surface-2);border-radius:8px;padding:10px 12px}
+.catalog-sec{margin-bottom:14px}.catalog-sec h2{font-size:22px}.catalog-sec p{margin:4px 0 0;font-size:14px}
 .toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-weight:600;font-size:13.5px;cursor:pointer;color:var(--ink)}
@@ -908,7 +909,7 @@ function pageHome(){
       <h1>Everything for the occasion, <span class="serif">ready when you are.</span></h1>
       <p class="lead">Event, entertainment, camera, camping and beach gear under one roof. Reserve online with live availability, then collect it at our counter, inspected and ready to go.</p>
       <form class="search-card" id="heroSearch">
-        <div class="field"><label for="hs-cat">What do you need?</label><select class="input" id="hs-cat"><option value="all">All equipment</option>${CATS.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
+        <div class="field"><label for="hs-cat">What do you need?</label><select class="input" id="hs-cat"><option value="all">All equipment</option><option value="packages">Rental packages</option>${CATS.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
         <div class="field"><label for="hs-start">Pickup</label><input class="input" type="date" id="hs-start" min="${TODAY}" value="${DB.period.start}"></div>
         <div class="field"><label for="hs-end">Return</label><input class="input" type="date" id="hs-end" min="${TODAY}" value="${DB.period.end}"></div>
         <button class="btn btn-gold" type="submit">Check availability</button>
@@ -940,13 +941,8 @@ function pageHome(){
 
   <section class="section" style="padding-top:0"><div class="wrap">
     <div class="sec-head"><div><div class="eyebrow">Ready-made bundles</div><h2>Rental packages</h2><p>Curated gear bundles for your event, shoot or day out, with one clear daily rate and refundable deposit.</p></div></div>
-    <div class="package-grid">${RENTAL_PACKAGES.map(pack=>`<article class="package-card">
-      <div><div class="eyebrow">24-hour package</div><h3>${pack.name}</h3></div>
-      <div><div class="package-price">${peso(pack.price)} <small>/ day</small></div><div class="package-deposit"><span>Refundable deposit</span><b>${peso(pack.deposit)}</b></div></div>
-      <ul class="package-includes">${pack.items.map(([id,qty])=>`<li><span>${esc(item(id).name)}</span><b>× ${qty}</b></li>`).join('')}</ul>
-      <button class="btn btn-primary" data-pack="${RENTAL_PACKAGES.indexOf(pack)}">Reserve Package</button>
-    </article>`).join('')}</div>
-    <p class="package-note">Each package covers a 24-hour rental period. The package price is applied automatically in your cart.</p>
+    <div class="package-grid">${RENTAL_PACKAGES.map(packageCard).join('')}</div>
+    <p class="package-note">Each package covers a 24-hour rental period and has fixed contents. Extra items you add are charged at regular rates.</p>
   </div></section>
 
   <section class="section" style="padding-top:0"><div class="wrap">
@@ -1021,29 +1017,50 @@ function productCard(it){
       <div class="card-foot"><span class="price num">${peso(it.price)} <small>/ ${esc(it.unit)} / day</small><small class="price-dep">${peso(it.deposit)} refundable deposit</small></span>
       <button class="btn btn-primary btn-sm" data-item="${it.id}">Reserve</button></div></div></article>`;
 }
+// How many more of a package can be reserved for the chosen dates, after what's already in the cart.
+function packFree(i, ignoreCart){
+  const inCart=ignoreCart?{}:Object.fromEntries(units(DB.cart,DB.cartPacks).map(u=>[u.itemId,u.qty]));
+  return Math.max(0,Math.min(...RENTAL_PACKAGES[i].items.map(([id,q])=>Math.floor((available(id,DB.period.start,DB.period.end)-(inCart[id]||0))/q))));
+}
+function packageCard(pack,i){
+  const free=packFree(i), saves=packRegular({...pack,qty:1})-pack.price;
+  return `<article class="package-card">
+      <div class="row" style="justify-content:space-between;align-items:flex-start"><div><div class="eyebrow">24-hour package</div><h3>${esc(pack.name)}</h3></div>${free?`<span class="pill ok">${free} available</span>`:packFree(i,true)?'<span class="pill warn">All free sets in your cart</span>':'<span class="pill bad">Fully booked</span>'}</div>
+      <div><div class="package-price">${peso(pack.price)} <small>/ day</small></div><div class="package-deposit"><span>Refundable deposit</span><b>${peso(pack.deposit)}</b></div><div class="package-deposit" style="border-top:0;padding-top:4px"><span>You save</span><b style="color:var(--ok)">${peso(saves)} / day</b></div></div>
+      <ul class="package-includes">${pack.items.map(([id,qty])=>`<li><span>${esc(item(id).name)}</span><b>× ${qty}</b></li>`).join('')}</ul>
+      <button class="btn btn-primary" data-pack="${i}" ${free?'':'disabled'}>${free?'Reserve Package':'Not available for these dates'}</button>
+    </article>`;
+}
 function periodFields(prefix){
   return `<div class="two"><div class="field"><label for="${prefix}-s">Pickup</label><input class="input" type="date" id="${prefix}-s" data-period="start" min="${TODAY}" value="${DB.period.start}"></div><div class="field"><label for="${prefix}-e">Return</label><input class="input" type="date" id="${prefix}-e" data-period="end" min="${DB.period.start}" value="${DB.period.end}"></div></div>`;
 }
 function pageCatalog(){
-  let list=DB.items.filter(i=>(UI.cat==='all'||i.cat===UI.cat) && (!UI.q || (i.name+' '+i.desc).toLowerCase().includes(UI.q.toLowerCase())));
+  const q=UI.q.toLowerCase();
+  let list=UI.cat==='packages'?[]:DB.items.filter(i=>(UI.cat==='all'||i.cat===UI.cat) && (!q || (i.name+' '+i.desc).toLowerCase().includes(q)));
+  // Packages show with their category; a search matches the package name or anything inside it.
+  const packs=RENTAL_PACKAGES.map((pack,i)=>({pack,i})).filter(({pack})=>(['all','packages'].includes(UI.cat)||pack.cat===UI.cat) && (!q || [pack.name,...pack.items.map(([id])=>item(id).name)].join(' ').toLowerCase().includes(q)));
   if(UI.sort==='low') list=[...list].sort((a,b)=>a.price-b.price);
   if(UI.sort==='high') list=[...list].sort((a,b)=>b.price-a.price);
   if(UI.sort==='avail') list=[...list].sort((a,b)=>available(b.id,DB.period.start,DB.period.end)/b.stock-available(a.id,DB.period.start,DB.period.end)/a.stock);
   const d=rentalDays(DB.period.start,DB.period.end);
-  return `<div class="page-head"><div class="wrap"><div class="crumbs">Home / Equipment${UI.cat!=='all'?' / '+catName(UI.cat):''}</div><h1>${UI.cat==='all'?'All equipment':catName(UI.cat)}</h1></div></div>
+  return `<div class="page-head"><div class="wrap"><div class="crumbs">Home / Equipment${UI.cat!=='all'?' / '+(UI.cat==='packages'?'Rental packages':catName(UI.cat)):''}</div><h1>${UI.cat==='all'?'All equipment':UI.cat==='packages'?'Rental packages':catName(UI.cat)}</h1></div></div>
   <div class="wrap catalog">
     <aside class="filters">
       <div><h4>Rental period</h4><div style="margin-top:8px;display:grid;gap:10px">${periodFields('cf')}<div class="period-note num"><b>${d} day${d>1?'s':''}</b> · ${fmtShort(DB.period.start)} to ${fmtShort(DB.period.end)}<br>${rentalTerm(d)}<br><span class="muted">Availability below is for these dates.</span></div></div></div>
       <div><h4>Search</h4><input class="input" id="q" placeholder="Search equipment" value="${esc(UI.q)}" style="margin-top:8px"></div>
       <div><h4>Category</h4><div class="cat-list" style="margin-top:6px">
-        <button data-cat-set="all" class="${UI.cat==='all'?'on':''}">All equipment <span>${DB.items.length}</span></button>
-        ${CATS.map(c=>`<button data-cat-set="${c.id}" class="${UI.cat===c.id?'on':''}">${c.name}<span>${DB.items.filter(i=>i.cat===c.id).length}</span></button>`).join('')}
+        <button data-cat-set="all" class="${UI.cat==='all'?'on':''}">All equipment <span>${DB.items.length+RENTAL_PACKAGES.length}</span></button>
+        <button data-cat-set="packages" class="${UI.cat==='packages'?'on':''}">Rental packages <span>${RENTAL_PACKAGES.length}</span></button>
+        ${CATS.map(c=>`<button data-cat-set="${c.id}" class="${UI.cat===c.id?'on':''}">${c.name}<span>${DB.items.filter(i=>i.cat===c.id).length+RENTAL_PACKAGES.filter(p=>p.cat===c.id).length}</span></button>`).join('')}
       </div></div>
     </aside>
     <div style="min-width:0">
-      <div class="toolbar"><span class="muted">${list.length} item${list.length!==1?'s':''}</span>
+      <div class="toolbar"><span class="muted">${[packs.length?`${packs.length} package${packs.length!==1?'s':''}`:'',UI.cat!=='packages'?`${list.length} item${list.length!==1?'s':''}`:''].filter(Boolean).join(' · ')}</span>
         <div class="row"><label for="sort" class="muted" style="font-size:13px">Sort</label><select class="input" id="sort" style="width:auto"><option value="popular">Featured</option><option value="avail" ${UI.sort==='avail'?'selected':''}>Most available</option><option value="low" ${UI.sort==='low'?'selected':''}>Price: low to high</option><option value="high" ${UI.sort==='high'?'selected':''}>Price: high to low</option></select></div></div>
-      ${list.length?`<div class="grid">${list.map(productCard).join('')}</div>`:`<div class="panel empty">${I.bag}<h3>No equipment matches “${esc(UI.q)}”</h3><button class="btn btn-ghost" id="clearQ">Clear search</button></div>`}
+      ${packs.length?`<div class="catalog-sec"><h2>Rental packages</h2><p class="muted">Bundles at a discounted daily rate. Contents are fixed; extras are charged at regular rates.</p></div><div class="package-grid">${packs.map(({pack,i})=>packageCard(pack,i)).join('')}</div>`:''}
+      ${packs.length&&list.length?`<div class="catalog-sec" style="margin-top:32px"><h2>Individual items</h2><p class="muted">Rent any quantity at the regular daily rate.</p></div>`:''}
+      ${list.length?`<div class="grid">${list.map(productCard).join('')}</div>`:''}
+      ${packs.length||list.length?'':`<div class="panel empty">${I.bag}<h3>No equipment matches “${esc(UI.q)}”</h3><button class="btn btn-ghost" id="clearQ">Clear search</button></div>`}
     </div>
   </div>`;
 }

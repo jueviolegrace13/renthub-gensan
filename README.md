@@ -6,7 +6,7 @@ Interactive website preview for **RentHub Gensan**, a multi-category equipment r
 
 ## What's included
 
-- **Storefront:** homepage, an equipment catalog with live availability by date, and item details.
+- **Storefront:** homepage, an equipment catalog with live availability by date (rental packages and individual items, filterable by category), and item details.
 - **Customer flow:** sign up and log in, a multi-item cart, rental date selection and pickup-only checkout.
 - **Customer dashboard:** reservation tracking, history and profile.
 - **Admin console:** overview, reservations, equipment and inventory, a 14-day availability calendar and customers.
