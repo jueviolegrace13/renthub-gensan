@@ -1,0 +1,18 @@
+import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
+const url='file:///home/user/renthub-gensan/index.html';
+const b=await chromium.launch();
+const p=await b.newPage({viewport:{width:1440,height:900},deviceScaleFactor:1.5});
+await p.goto(url); await p.waitForTimeout(800);
+const shot=async(n,opts={})=>{await p.waitForTimeout(500); await p.screenshot({path:`shots/${n}.png`,...opts});};
+await shot('home');
+const sec=async(sel,n)=>{const el=p.locator(sel).first(); await el.scrollIntoViewIfNeeded(); await p.evaluate(()=>window.scrollBy(0,-90)); await shot(n);};
+await sec('.bento','categories');
+await sec('.package-grid','packages');
+await sec('.standard','standard');
+await sec('.steps','steps');
+await p.evaluate(()=>go('catalog')); await shot('catalog');
+await p.evaluate(()=>{go('catalog',{cat:'beach'})}); await shot('catalog-beach');
+await p.evaluate(()=>{const u=DB.users.find(u=>u.role==='customer'); DB.session=u.id; save(); go('account');}); await shot('dashboard');
+await p.evaluate(()=>{const u=DB.users.find(u=>u.role==='admin'); DB.session=u.id; save(); UI.adminTab='overview'; go('admin');}); await shot('admin');
+await p.evaluate(()=>{UI.adminTab='availability'; render();}); await shot('calendar');
+await b.close();
