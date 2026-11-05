@@ -696,7 +696,8 @@ const SEED_ITEMS = [
   {id:'mask', cat:'beach', name:'Diving Mask', price:60, unit:'mask', deposit:30, stock:16, desc:'Tempered-glass mask with silicone skirt and a dry-top snorkel. Anti-fog treated before every rental.', includes:['Tempered-glass lens','Dry-top snorkel','Anti-fog treated']},
   {id:'vest', cat:'beach', name:'Life Vest (Kids/Adults)', price:120, unit:'vest', deposit:60, stock:20, desc:'Coast-guard-style buoyancy vests with buckles and crotch strap. Available in kids (15–40kg) and adult sizes.', includes:['Kids and adult sizes','Buckle closure + crotch strap','Reflective tape']},
 ];
-const PRICING_VERSION = 6;
+// Bump whenever SEED_ITEMS changes so returning visitors' saved catalog is refreshed.
+const PRICING_VERSION = 7;
 
 /* ---------- equipment images ---------- */
 const EQUIPMENT_IMAGES = {
@@ -797,7 +798,9 @@ DB.cartPacks=DB.cartPacks||[];
 if((DB.pricingVersion||0)<PRICING_VERSION){
   for(const source of SEED_ITEMS){
     let stored=DB.items.find(i=>i.id===source.id);
-    if(!stored){stored={...source,status:'active'};DB.items.push(stored)}
+    if(!stored){stored={...source,status:'active'};DB.items.push(stored);continue}
+    // Refresh catalog details from the current seed, keeping saved stock and status.
+    Object.assign(stored,{...source,stock:stored.stock,status:stored.status});
   }
   const legacyFins=DB.items.find(i=>i.id==='fins');
   if(legacyFins){
