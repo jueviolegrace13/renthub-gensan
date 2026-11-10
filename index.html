@@ -827,6 +827,7 @@ if((DB.pricingVersion||0)<PRICING_VERSION){
   try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}
 }
 if(DB.period.start < TODAY) DB.period = {start:addDays(TODAY,1), end:addDays(TODAY,2)};
+if(fmtDow(DB.period.start)==='Sun'){ const mon=addDays(DB.period.start,1); DB.period={start:mon, end:DB.period.end>mon?DB.period.end:addDays(mon,1)}; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)) }catch(e){} }
 
 const UI = {view:'home', cat:'all', q:'', checkout:null, lastCode:null, adminTab:'overview', resFilter:'all', resQ:'', authMode:'login', authNext:null, acctTab:'reservations', menu:false, sort:'popular'};
@@ -1187,6 +1188,7 @@ function placeOrder(){
   const c=UI.checkout; const err=$('#coErr');
   c.phone=$('#co-phone').value.trim(); c.notes=$('#co-notes').value.trim(); c.agree=$('#co-agree').checked;
   if(!/^[0-9 +()-]{7,}$/.test(c.phone)){ err.textContent='Enter a valid mobile number so we can reach you about your pickup.'; err.hidden=false; return; }
+  if(!c.slot){ err.textContent='Please choose a pickup time. We\'re closed on Sundays.'; err.hidden=false; return; }
   if(!c.agree){ err.textContent='Please agree to the rental terms to place your reservation.'; err.hidden=false; return; }
   const cf=conflicts(cartUnits(),DB.period.start,DB.period.end);
   if(cf.length){ toast('Someone just booked some of these units. Please review your cart.',true); go('cart'); return; }
@@ -1415,6 +1417,7 @@ function bind(){
 function setPeriod(start,end,quiet){
   if(!start) start=DB.period.start; if(!end) end=DB.period.end;
   if(start<TODAY){ start=TODAY; if(!quiet) toast('Pickup date can\'t be in the past.',true); }
+  if(fmtDow(start)==='Sun'){ start=addDays(start,1); if(end<=start) end=addDays(start,1); toast('We\'re closed on Sundays, so pickup moved to Monday.'); }
   if(end<start){ end=addDays(start,1); if(!quiet) toast('Return date moved to the day after pickup.'); }
   if(daysBetween(start,end)>30){ end=addDays(start,30); toast('Online reservations are limited to 30 days. Call us for longer rentals.'); }
   DB.period={start,end}; save();
