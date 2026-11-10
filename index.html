@@ -635,7 +635,7 @@ img{max-width:100%}
 <body>
 
 
-<div class="topbar"><div class="wrap"><span>Pickup only at our General Santos City shop · <b>No delivery</b></span><span class="hide-sm">Open Mon–Sat 8:00 AM – 6:00 PM · Sun 9:00 AM – 3:00 PM</span></div></div>
+<div class="topbar"><div class="wrap"><span>Pickup only at our General Santos City shop · <b>No delivery</b></span><span class="hide-sm">Open Mon–Sat 9:00 AM – 5:00 PM · Sun Closed</span></div></div>
 <header class="hdr"><div class="wrap">
   <button class="brand" data-go="home" aria-label="RentHub GenSan home"><img src="assets/logo.jpg" alt=""><span><b>Rent<span>Hub</span></b><small>GENSAN</small></span></button>
   <nav class="nav" id="nav"></nav>
@@ -1036,7 +1036,7 @@ function pickupBand(){
       </ul></div>
     <div class="shop-card"><h3>RentHub GenSan Pickup Counter</h3>
       <p>Pioneer Avenue, Dadiangas West<br>General Santos City, South Cotabato 9500</p>
-      <dl class="hours"><dt>Mon – Sat</dt><dd>8:00 AM – 6:00 PM</dd><dt>Sunday</dt><dd>9:00 AM – 3:00 PM</dd><dt>Phone</dt><dd>09920372031</dd><dt>Email</dt><dd>hello@renthubgensan.ph</dd></dl>
+      <dl class="hours"><dt>Mon – Sat</dt><dd>9:00 AM – 5:00 PM</dd><dt>Sunday</dt><dd>Closed</dd><dt>Phone</dt><dd>09920372031</dd><dt>Email</dt><dd>hello@renthubgensan.ph</dd></dl>
       <p style="font-size:12.5px;color:#9FB2CF">Address and contact details are placeholders for this preview.</p>
     </div>
   </div></section>`;
@@ -1144,21 +1144,21 @@ function pageCart(){
       <div class="sum-row"><span>Refundable Security Deposit</span><b>${peso(t.dep)}</b></div>
       <div class="sum-row"><span>Delivery</span><span class="muted">Not offered · pickup only</span></div>
       <div class="sum-row total"><span>Total Amount Due</span><span>${peso(t.rent+t.dep)}</span></div>
-      <div class="notice gold" style="margin-top:14px">${I.store}<span>Pick up on <b>${fmt(DB.period.start)}</b> and return by <b>${fmt(DB.period.end)}</b>, 6:00 PM, at our General Santos City shop.</span></div>
+      <div class="notice gold" style="margin-top:14px">${I.store}<span>Pick up on <b>${fmt(DB.period.start)}</b> and return by <b>${fmt(DB.period.end)}</b>, 5:00 PM, at our General Santos City shop.</span></div>
       <button class="btn btn-primary" style="width:100%;margin-top:14px" id="toCheckout" ${cf.length?'disabled':''}>Continue to checkout</button>
       ${me()?'':'<p class="muted" style="font-size:13px;text-align:center;margin-top:8px">You will be asked to log in or create an account.</p>'}
     </div></aside>
   </div>`;
 }
-const SLOTS=['8:00 AM','9:00 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM'];
-function slotsFor(day){ return fmtDow(day)==='Sun' ? SLOTS.filter(s=>['9:00 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM'].includes(s)) : SLOTS; }
+const SLOTS=['9:00 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM'];
+function slotsFor(day){ return fmtDow(day)==='Sun' ? [] : SLOTS; }
 function pageCheckout(){
   const u=me(); const t=cartTotals(); const c=UI.checkout||(UI.checkout={slot:slotsFor(DB.period.start)[0],pay:'shop',phone:u.phone,notes:'',agree:false});
   return `<div class="page-head"><div class="wrap"><div class="crumbs">Cart / Checkout</div><h1>Reserve for pickup</h1></div></div>
   <div class="wrap layout-2"><form class="stack" id="coForm">
     <div class="panel"><div class="panel-h"><h3>Pickup time on ${fmt(DB.period.start)}</h3></div><div class="panel-b">
       <div class="slots">${slotsFor(DB.period.start).map(s=>`<button type="button" class="slot ${c.slot===s?'on':''}" data-slot="${s}">${s}</button>`).join('')}</div>
-      <p class="muted" style="font-size:13px;margin-top:10px">Return by 6:00 PM on ${fmt(DB.period.end)} (3:00 PM on Sundays).</p></div></div>
+      <p class="muted" style="font-size:13px;margin-top:10px">Return by 5:00 PM on ${fmt(DB.period.end)}.</p></div></div>
     <div class="panel"><div class="panel-h"><h3>Renter details</h3></div><div class="panel-b stack">
       <div class="two"><div class="field"><label for="co-name">Full name (must match your ID)</label><input class="input" id="co-name" value="${esc(u.name)}" readonly></div><div class="field"><label for="co-phone">Mobile number</label><input class="input" id="co-phone" value="${esc(c.phone)}" required></div></div>
       <div class="field"><label for="co-notes">Notes for the counter (optional)</label><textarea class="input" id="co-notes" rows="2" placeholder="e.g. We'll bring a pickup truck for the chairs">${esc(c.notes)}</textarea></div>
@@ -1202,7 +1202,7 @@ function pageConfirm(){
     <p class="muted">Your units are on hold. We'll confirm by SMS within the hour during shop hours.</p>
     <div class="code-big">${r.code}</div><p class="muted" style="font-size:13px">Show this code at the counter</p></div>
     <div class="panel-b" style="border-top:1px solid var(--line)"><div class="kv">
-      <div><small>Pickup</small><b>${fmt(r.start)} · ${r.slot}</b></div><div><small>Return by</small><b>${fmt(r.end)} · 6:00 PM</b></div>
+      <div><small>Pickup</small><b>${fmt(r.start)} · ${r.slot}</b></div><div><small>Return by</small><b>${fmt(r.end)} · 5:00 PM</b></div>
       <div><small>Rental subtotal</small><b>${peso(resRentalSubtotal(r))}</b></div><div><small>Refundable Security Deposit</small><b>${peso(resDeposit(r))}</b></div><div><small>Total Amount Due</small><b>${peso(resTotal(r))}</b></div></div>
       <div class="notice gold" style="margin-top:14px">${I.id}<span>Bring a valid government ID under <b>${esc(user(r.userId).name)}</b>. Pickup is at our General Santos City shop only.</span></div>
       <div class="row" style="justify-content:center;margin-top:18px"><button class="btn btn-primary" data-go="account">Track my reservations</button><button class="btn btn-ghost" data-go="catalog">Keep browsing</button></div>
@@ -1383,7 +1383,7 @@ function footer(){
     <div style="display:grid;gap:12px;align-content:start"><div class="brand"><img src="${LOGO}" alt=""><span><b>Rent<span>Hub</span></b><small>GENSAN</small></span></div><p class="muted" style="font-size:14px;max-width:36ch">Rent what you need, the smarter choice indeed. Event, entertainment, photography, camping and beach gear in General Santos City.</p></div>
     <div><h4>Equipment</h4><ul>${CATS.map(c=>`<li><button data-cat-go="${c.id}">${c.name}</button></li>`).join('')}</ul></div>
     <div><h4>Renting</h4><ul><li><button data-go="how">How it works</button></li><li><button data-go="how">Pickup policy</button></li><li><button data-go="cart">Your cart</button></li><li><button data-go="account">My reservations</button></li></ul></div>
-    <div><h4>Visit us</h4><ul><li>Pioneer Avenue, Dadiangas West</li><li>General Santos City 9500</li><li>Mon–Sat 8 AM – 6 PM</li><li>Sun 9 AM – 3 PM</li></ul></div>
+    <div><h4>Visit us</h4><ul><li>Pioneer Avenue, Dadiangas West</li><li>General Santos City 9500</li><li>Mon–Sat 9 AM – 5 PM</li><li>Sun Closed</li></ul></div>
   </div><div class="foot-bottom"><div class="wrap"><span>© 2026 RentHub GenSan. All rights reserved.</span><span>Pickup only · No delivery or shipping</span></div></div></footer>`;
 }
 function render(){
