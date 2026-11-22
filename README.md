@@ -28,15 +28,35 @@ Interactive website preview for **RentHub Gensan**, a multi-category equipment r
 
 Rental rates, deposits and stock follow the feasibility study (Tables 5, 6 and 22), except for the custom Beach and Water package below.
 
+### Individual refundable deposits
+
+| Equipment | Daily rental rate | Refundable security deposit |
+|---|---:|---:|
+| Event Chair | ₱15 | ₱30 |
+| Event Table | ₱120 | ₱240 |
+| Sound System | ₱800 | ₱1,600 |
+| Karaoke Machine | ₱800 | ₱1,600 |
+| Board Game Set | ₱80 | ₱160 |
+| Projector and Screen Set | ₱1,000 | ₱2,000 |
+| DSLR Camera | ₱650 | ₱1,300 |
+| Underwater Camera | ₱600 | ₱1,200 |
+| Photography Reflector Set | ₱150 | ₱300 |
+| Camping Tent | ₱350 | ₱700 |
+| Folding Camping Chair | ₱75 | ₱150 |
+| Folding Camping Table | ₱120 | ₱240 |
+| Diving Fins, pair | ₱500 | ₱1,000 |
+| Diving Mask | ₱60 | ₱120 |
+| Life Vest | ₱120 | ₱240 |
+
 ### Shop rules
 
-- All reservations are picked up and returned at the shop on Pan-Philippine National Highway, Barangay City Heights. The site has no delivery or shipping options.
+- Customers may personally pick up and return equipment at the hub at the corner of Camachili Street and Casquejo Street, Barangay Dadiangas East. Optional third-party delivery is available within General Santos City; the transportation charge is quoted separately and paid by the customer.
 - The shop is open Monday to Saturday, 9:00 AM to 5:00 PM, and closed on Sundays, so pickups and returns can't fall on a Sunday.
 - Each rental day is a 24-hour period from the pickup time. Short-term rentals run up to 6 days, and long-term rentals run 7 days and above.
 
 ### Fixed-price package
 
-The Beach and Water Activities package is reservable at **₱1,760 per day** with an **₱880 refundable deposit**. It includes 1 Underwater Camera, 2 pairs of Diving Fins, 2 Diving Masks and 2 Life Vests. Reservations hold the included equipment against inventory availability.
+The Beach and Water Activities package is reservable at **₱1,760 per day** with a **₱3,520 refundable deposit**. It includes 1 Underwater Camera, 2 pairs of Diving Fins, 2 Diving Masks and 2 Life Vests. Reservations hold the included equipment against inventory availability.
 
 ## Preview accounts
 

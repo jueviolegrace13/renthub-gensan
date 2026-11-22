@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="RentHub GenSan — event, entertainment, photography, camping and beach equipment rentals in General Santos City. Reserve online, pick up in store.">
+<meta name="description" content="RentHub GenSan — event, entertainment, photography, camping and beach equipment rentals in General Santos City. Reserve online for pickup or optional third-party delivery.">
 <meta name="theme-color" content="#12386B">
 <meta property="og:title" content="RentHub GenSan">
 <meta property="og:description" content="Rent what you need, the smarter choice indeed. Equipment rentals in General Santos City.">
@@ -635,7 +635,7 @@ img{max-width:100%}
 <body>
 
 
-<div class="topbar"><div class="wrap"><span>Pickup only at our General Santos City shop · <b>No delivery</b></span><span class="hide-sm">Open Mon–Sat 9:00 AM – 5:00 PM · Sun Closed</span></div></div>
+<div class="topbar"><div class="wrap"><span>Pickup at our shop or arrange <b>optional delivery</b> within General Santos City</span><span class="hide-sm">Open Mon–Sat 9:00 AM – 5:00 PM · Sun Closed</span></div></div>
 <header class="hdr"><div class="wrap">
   <button class="brand" data-go="home" aria-label="RentHub GenSan home"><img src="assets/logo.jpg" alt=""><span><b>Rent<span>Hub</span></b><small>GENSAN</small></span></button>
   <nav class="nav" id="nav"></nav>
@@ -673,30 +673,30 @@ const CATS = [
   {id:'beach', name:'Beach & Water', blurb:'Snorkeling and safety gear for Sarangani Bay outings.', hero:'mask'},
 ];
 const RENTAL_PACKAGES = [
-  {name:'Events and Parties',cat:'events',price:1400,deposit:700,items:[['chairs',20],['tables',4],['sound',1]]},
-  {name:'Entertainment Equipment',cat:'entertainment',price:1700,deposit:850,items:[['karaoke',1],['projector',1],['boardgames',1]]},
-  {name:'Photography and Content Creation',cat:'photography',price:720,deposit:360,items:[['dslr',1],['reflector',1]]},
-  {name:'Outdoor and Camping',cat:'outdoor',price:550,deposit:275,items:[['tent',1],['campchair',2],['camptable',1]]},
-  {name:'Beach and Water Activities',cat:'beach',price:1760,deposit:880,items:[['underwater',1],['fins-carbon',2],['mask',2],['vest',2]]},
+  {name:'Events and Parties',cat:'events',price:1400,deposit:2800,items:[['chairs',20],['tables',4],['sound',1]]},
+  {name:'Entertainment Equipment',cat:'entertainment',price:1700,deposit:3400,items:[['karaoke',1],['projector',1],['boardgames',1]]},
+  {name:'Photography and Content Creation',cat:'photography',price:720,deposit:1440,items:[['dslr',1],['reflector',1]]},
+  {name:'Outdoor and Camping',cat:'outdoor',price:550,deposit:1100,items:[['tent',1],['campchair',2],['camptable',1]]},
+  {name:'Beach and Water Activities',cat:'beach',price:1760,deposit:3520,items:[['underwater',1],['fins-carbon',2],['mask',2],['vest',2]]},
 ];
 const SEED_ITEMS = [
-  {id:'chairs', cat:'events', name:'Event Chair', price:15, unit:'chair', deposit:8, stock:200, desc:'White resin monoblock chairs with seat covers available on request. Stackable, easy to transport in a pickup or van.', includes:['Wiped and sanitized before release','Stack of 10 per bundle','Optional white seat cover (+₱10)']},
-  {id:'tables', cat:'events', name:'Event Table', price:120, unit:'table', deposit:60, stock:30, desc:'6-ft rectangular folding tables that seat 6–8 guests. Comes with a white table cloth.', includes:['White table cloth included','Folding steel legs','Seats 6–8 guests']},
-  {id:'sound', cat:'events', name:'Sound System', price:800, unit:'set', deposit:400, stock:3, desc:'Pair of 15-inch powered speakers with a 12-channel mixer and two wireless microphones. Good for up to 150 guests.', includes:['2 × 15" powered speakers with stands','12-channel mixer','2 wireless mics','Cables and extension reel']},
-  {id:'karaoke', cat:'entertainment', name:'Karaoke Machine', price:800, unit:'set', deposit:400, stock:4, desc:'Plug-and-play videoke unit with 30,000+ songs, scoring, and two wired microphones. Connects to any TV via HDMI.', includes:['Videoke player with song book','2 wired microphones','HDMI and remote control']},
-  {id:'boardgames', cat:'entertainment', name:'Board Game Set', price:80, unit:'set', deposit:40, stock:12, desc:'Pick from party and strategy titles for 2–10 players. Each box is counted and checked before release.', includes:['Complete set, piece-counted','Rules sheet in English and Filipino','Pick titles at the counter']},
-  {id:'projector', cat:'entertainment', name:'Projector and Screen Set', price:1000, unit:'set', deposit:500, stock:3, desc:'Full HD 3,500-lumen projector with a 100-inch tripod screen. Ideal for outdoor movie nights and presentations.', includes:['1080p projector, 3,500 lumens','100" tripod screen','HDMI cable and carry case']},
-  {id:'dslr', cat:'photography', name:'DSLR Camera', price:650, unit:'kit', deposit:325, stock:4, desc:'24MP DSLR with an 18–55mm kit lens, 64GB card and two batteries. Great for events, portraits and travel.', includes:['24MP body + 18–55mm lens','64GB SD card','2 batteries and charger','Padded camera bag']},
-  {id:'underwater', cat:'photography', name:'Underwater Camera', price:600, unit:'kit', deposit:300, stock:4, desc:'4K action camera in a 40m waterproof housing with a floating hand grip. Built for snorkeling and diving.', includes:['4K action camera','Waterproof housing (40m)','Floating hand grip','32GB card']},
-  {id:'reflector', cat:'photography', name:'Photography Reflector Set', price:150, unit:'set', deposit:75, stock:5, desc:'5-in-1 collapsible 110cm reflector with gold, silver, white, black and diffuser surfaces, plus a holder arm.', includes:['5-in-1 reflector, 110cm','Light stand with holder arm','Zip carry bag']},
-  {id:'tent', cat:'outdoor', name:'Camping Tent', price:350, unit:'tent', deposit:175, stock:10, desc:'Waterproof 4-person dome tent with rain fly and ground sheet. Sets up in about 10 minutes.', includes:['4-person dome tent','Rain fly and ground sheet','Stakes and guy lines']},
-  {id:'campchair', cat:'outdoor', name:'Folding Camping Chair', price:75, unit:'chair', deposit:38, stock:20, desc:'Lightweight steel-frame chair with cup holder and shoulder bag. Supports up to 120kg.', includes:['Cup holder armrest','Carry bag with strap','120kg capacity']},
-  {id:'camptable', cat:'outdoor', name:'Folding Camping Table', price:120, unit:'table', deposit:60, stock:8, desc:'Aluminum roll-top table that folds into a carry bag. Fits 4 people for meals at camp.', includes:['Aluminum roll-top','Adjustable legs','Carry bag']},
-  {id:'fins-carbon', cat:'beach', name:'Carbon Fiber Fins (Pair)', price:500, unit:'pair', deposit:250, stock:4, desc:'Responsive carbon fiber fins for snorkeling and recreational diving. Sizes S to XL.', includes:['Responsive carbon fiber blades','Sizes S–XL','Rinsed and sanitized']},
-  {id:'mask', cat:'beach', name:'Diving Mask', price:60, unit:'mask', deposit:30, stock:16, desc:'Tempered-glass mask with silicone skirt and a dry-top snorkel. Anti-fog treated before every rental.', includes:['Tempered-glass lens','Dry-top snorkel','Anti-fog treated']},
-  {id:'vest', cat:'beach', name:'Life Vest (Kids/Adults)', price:120, unit:'vest', deposit:60, stock:20, desc:'Coast-guard-style buoyancy vests with buckles and crotch strap. Available in kids (15–40kg) and adult sizes.', includes:['Kids and adult sizes','Buckle closure + crotch strap','Reflective tape']},
+  {id:'chairs', cat:'events', name:'Event Chair', price:15, unit:'chair', deposit:30, stock:100, desc:'White resin monoblock chairs with seat covers available on request. Stackable and available for shop pickup or optional third-party delivery.', includes:['Wiped and sanitized before release','Stack of 10 per bundle','Optional white seat cover (+₱10)']},
+  {id:'tables', cat:'events', name:'Event Table', price:120, unit:'table', deposit:240, stock:15, desc:'6-ft rectangular folding tables that seat 6–8 guests. Comes with a white table cloth.', includes:['White table cloth included','Folding steel legs','Seats 6–8 guests']},
+  {id:'sound', cat:'events', name:'Sound System', price:800, unit:'set', deposit:1600, stock:5, desc:'Pair of 15-inch powered speakers with a 12-channel mixer and two wireless microphones. Good for up to 150 guests.', includes:['2 × 15" powered speakers with stands','12-channel mixer','2 wireless mics','Cables and extension reel']},
+  {id:'karaoke', cat:'entertainment', name:'Karaoke Machine', price:800, unit:'set', deposit:1600, stock:3, desc:'Plug-and-play videoke unit with 30,000+ songs, scoring, and two wired microphones. Connects to any TV via HDMI.', includes:['Videoke player with song book','2 wired microphones','HDMI and remote control']},
+  {id:'boardgames', cat:'entertainment', name:'Board Game Set', price:80, unit:'set', deposit:160, stock:10, desc:'Pick from party and strategy titles for 2–10 players. Each box is counted and checked before release.', includes:['Complete set, piece-counted','Rules sheet in English and Filipino','Pick titles at the counter']},
+  {id:'projector', cat:'entertainment', name:'Projector and Screen Set', price:1000, unit:'set', deposit:2000, stock:3, desc:'Full HD 3,500-lumen projector with a 100-inch tripod screen. Ideal for outdoor movie nights and presentations.', includes:['1080p projector, 3,500 lumens','100" tripod screen','HDMI cable and carry case']},
+  {id:'dslr', cat:'photography', name:'DSLR Camera', price:650, unit:'kit', deposit:1300, stock:5, desc:'24MP DSLR with an 18–55mm kit lens, 64GB card and two batteries. Great for events, portraits and travel.', includes:['24MP body + 18–55mm lens','64GB SD card','2 batteries and charger','Padded camera bag']},
+  {id:'underwater', cat:'photography', name:'Underwater Camera', price:600, unit:'kit', deposit:1200, stock:5, desc:'4K action camera in a 40m waterproof housing with a floating hand grip. Built for snorkeling and diving.', includes:['4K action camera','Waterproof housing (40m)','Floating hand grip','32GB card']},
+  {id:'reflector', cat:'photography', name:'Photography Reflector Set', price:150, unit:'set', deposit:300, stock:5, desc:'5-in-1 collapsible 110cm reflector with gold, silver, white, black and diffuser surfaces, plus a holder arm.', includes:['5-in-1 reflector, 110cm','Light stand with holder arm','Zip carry bag']},
+  {id:'tent', cat:'outdoor', name:'Camping Tent', price:350, unit:'tent', deposit:700, stock:5, desc:'Waterproof 4-person dome tent with rain fly and ground sheet. Sets up in about 10 minutes.', includes:['4-person dome tent','Rain fly and ground sheet','Stakes and guy lines']},
+  {id:'campchair', cat:'outdoor', name:'Folding Camping Chair', price:75, unit:'chair', deposit:150, stock:8, desc:'Lightweight steel-frame chair with cup holder and shoulder bag. Supports up to 120kg.', includes:['Cup holder armrest','Carry bag with strap','120kg capacity']},
+  {id:'camptable', cat:'outdoor', name:'Folding Camping Table', price:120, unit:'table', deposit:240, stock:5, desc:'Aluminum roll-top table that folds into a carry bag. Fits 4 people for meals at camp.', includes:['Aluminum roll-top','Adjustable legs','Carry bag']},
+  {id:'fins-carbon', cat:'beach', name:'Diving Fins (Pair)', price:500, unit:'pair', deposit:1000, stock:5, desc:'Diving fins for snorkeling and recreational diving. Sizes S to XL.', includes:['Recreational diving fins','Sizes S–XL','Rinsed and sanitized']},
+  {id:'mask', cat:'beach', name:'Diving Mask', price:60, unit:'mask', deposit:120, stock:5, desc:'Tempered-glass mask with silicone skirt and a dry-top snorkel. Anti-fog treated before every rental.', includes:['Tempered-glass lens','Dry-top snorkel','Anti-fog treated']},
+  {id:'vest', cat:'beach', name:'Life Vest (Kids/Adults)', price:120, unit:'vest', deposit:240, stock:10, desc:'Coast-guard-style buoyancy vests with buckles and crotch strap. Available in kids (15–40kg) and adult sizes.', includes:['Kids and adult sizes','Buckle closure + crotch strap','Reflective tape']},
 ];
-const PRICING_VERSION = 6;
+const PRICING_VERSION = 8;
 
 /* ---------- equipment images ---------- */
 const EQUIPMENT_IMAGES = {
@@ -797,7 +797,19 @@ DB.cartPacks=DB.cartPacks||[];
 if((DB.pricingVersion||0)<PRICING_VERSION){
   for(const source of SEED_ITEMS){
     let stored=DB.items.find(i=>i.id===source.id);
-    if(!stored){stored={...source,status:'active'};DB.items.push(stored)}
+    if(!stored){
+      stored={...source,status:'active'};
+      DB.items.push(stored);
+    }else{
+      stored.name=source.name;
+      stored.cat=source.cat;
+      stored.price=source.price;
+      stored.unit=source.unit;
+      stored.deposit=source.deposit;
+      stored.stock=source.stock;
+      stored.desc=source.desc;
+      stored.includes=source.includes;
+    }
   }
   const legacyFins=DB.items.find(i=>i.id==='fins');
   if(legacyFins){
@@ -819,6 +831,23 @@ if((DB.pricingVersion||0)<PRICING_VERSION){
     }
     for(const line of DB.cart||[]) if(line.itemId==='fins') line.itemId='fins-carbon';
     DB.items=DB.items.filter(i=>i.id!=='fins');
+  }
+  for(const reservation of DB.reservations||[]){
+    for(const line of reservation.lines||[]){
+      const source=SEED_ITEMS.find(i=>i.id===line.itemId);
+      if(source){
+        line.price=source.price;
+        line.deposit=source.deposit;
+      }
+    }
+    for(const pack of reservation.packs||[]){
+      const source=RENTAL_PACKAGES.find(p=>p.name===pack.name);
+      if(source){
+        pack.price=source.price;
+        pack.deposit=source.deposit;
+        pack.items=source.items.map(([id,qty])=>[id,qty]);
+      }
+    }
   }
   DB.pricingVersion=PRICING_VERSION;
   try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}
@@ -947,7 +976,7 @@ function pageHome(){
       <div class="hero-trust">
         <span>${I.shield} Inspected after every rental</span>
         <span>${I.cal} Units held the moment you book</span>
-        <span>${I.store} Counter pickup only</span>
+        <span>${I.store} Pickup or optional delivery</span>
       </div>
     </div>
     <div class="showcase">
@@ -985,12 +1014,12 @@ function pageHome(){
       <div class="std"><span class="ring">${I.shield}</span><h3>Inspected and sanitized</h3><p>Every unit is cleaned, tested and logged after each return, before it goes back on the shelf.</p></div>
       <div class="std"><span class="ring">${I.cal}</span><h3>No double bookings</h3><p>Your units are held the second you reserve. Nobody else can book them for your dates.</p></div>
       <div class="std"><span class="ring">${I.box}</span><h3>Complete kits</h3><p>Cables, cases, batteries and covers are counted in. You won't discover a missing piece on site.</p></div>
-      <div class="std"><span class="ring">${I.store}</span><h3>Face-to-face release</h3><p>We walk you through each item at the counter. Pickup only, so high-value gear stays accounted for.</p></div>
+      <div class="std"><span class="ring">${I.store}</span><h3>Face-to-face release</h3><p>We inspect every item with you at pickup or before third-party delivery within General Santos City.</p></div>
     </div>
   </div></section>
 
   <section class="section" id="how" style="padding-top:0"><div class="wrap">
-    <div class="sec-head"><div><div class="eyebrow">How renting works</div><h2>Reserve online, <span class="serif">pick up in person</span></h2><p>Three steps from browsing to holding your gear. We don't deliver or ship.</p></div></div>
+    <div class="sec-head">    <div><div class="eyebrow">How renting works</div><h2>Reserve online, <span class="serif">choose pickup or delivery</span></h2><p>Three steps from browsing to holding your gear. Delivery is optional and arranged separately within General Santos City.</p></div></div>
     ${stepsHtml()}
   </div></section>
 
@@ -1022,17 +1051,18 @@ function stepsHtml(){
 }
 function pickupBand(){
   return `<section class="pickup-band"><div class="wrap">
-    <div><div class="eyebrow">Pickup &amp; rental policies</div><h2 style="margin-top:8px">Shop pickup only</h2>
+    <div><div class="eyebrow">Pickup &amp; rental policies</div><h2 style="margin-top:8px">Pickup or optional delivery</h2>
       <ul class="policy-list">
-        <li>${I.store}<span><b style="color:#fff">Shop pickup only:</b> All reservations must be collected at our physical shop. No delivery or shipping is available.</span></li>
+        <li>${I.store}<span><b style="color:#fff">Collection:</b> Customers may personally pick up and return equipment at the hub, or request optional third-party transportation within General Santos City.</span></li>
         <li>${I.id}<span><b style="color:#fff">Valid government-issued ID:</b> Customers must present a valid ID and sign a rental agreement before equipment release. The ID holder must match the reservation account name.</span></li>
-        <li>${I.shield}<span><b style="color:#fff">Refundable security deposit:</b> A deposit equal to 50% of the rental fee is required for individual equipment and packages. It will be refunded after inspection, minus any applicable deductions.</span></li>
+        <li>${I.shield}<span><b style="color:#fff">Refundable security deposit:</b> Individual items and packages require a deposit equal to 200% of the 24-hour rental fee. The deposit is separate from rental revenue and is refunded after final inspection, minus documented deductions.</span></li>
         <li>${I.cal}<span><b style="color:#fff">Late-return charges:</b> Delays up to 1 hour incur a 5% penalty. Delays exceeding 1 hour up to 2 hours incur a total 10% penalty. Delays exceeding 2 hours incur one full additional day's rental fee, with another daily charge for each succeeding 24-hour period.</span></li>
         <li>${I.box}<span><b style="color:#fff">Damage or loss:</b> Customers are responsible for documented repair or replacement costs that exceed their security deposit.</span></li>
         <li>${I.box}<span><b style="color:#fff">Equipment inspection:</b> Customers must inspect the equipment with staff at pickup and return it in good condition.</span></li>
+        <li>${I.store}<span><b style="color:#fff">Delivery charge:</b> Optional delivery is provided through third-party transportation. The transportation charge is quoted separately and paid by the customer.</span></li>
       </ul></div>
     <div class="shop-card"><h3>RentHub GenSan Pickup Counter</h3>
-      <p>Pioneer Avenue, Dadiangas West<br>General Santos City, South Cotabato 9500</p>
+      <p>Corner of Camachili Street and Casquejo Street<br>Barangay Dadiangas East, General Santos City<br>South Cotabato, Philippines</p>
       <dl class="hours"><dt>Mon – Sat</dt><dd>9:00 AM – 5:00 PM</dd><dt>Sunday</dt><dd>Closed</dd><dt>Phone</dt><dd>09920372031</dd><dt>Email</dt><dd>hello@renthubgensan.ph</dd></dl>
       <p style="font-size:12.5px;color:#9FB2CF">Address and contact details are placeholders for this preview.</p>
     </div>
@@ -1139,9 +1169,9 @@ function pageCart(){
       <div class="sum-row"><span>Rental subtotal</span><b>${peso(t.rent)}</b></div>
       ${t.save>0?`<p style="font-size:13px;color:var(--ok);margin:0 0 6px">Package rates save ${peso(t.save*t.d)} versus renting the same items individually.</p>`:''}
       <div class="sum-row"><span>Refundable Security Deposit</span><b>${peso(t.dep)}</b></div>
-      <div class="sum-row"><span>Delivery</span><span class="muted">Not offered · pickup only</span></div>
+      <div class="sum-row"><span>Delivery</span><span class="muted">Optional · General Santos City</span></div>
       <div class="sum-row total"><span>Total Amount Due</span><span>${peso(t.rent+t.dep)}</span></div>
-      <div class="notice gold" style="margin-top:14px">${I.store}<span>Pick up on <b>${fmt(DB.period.start)}</b> and return by <b>${fmt(DB.period.end)}</b>, 5:00 PM, at our General Santos City shop.</span></div>
+      <div class="notice gold" style="margin-top:14px">${I.store}<span>For pickup: collect on <b>${fmt(DB.period.start)}</b> and return by <b>${fmt(DB.period.end)}</b>, 5:00 PM, at the RentHub GenSan hub. Optional delivery within General Santos City is arranged separately.</span></div>
       <button class="btn btn-primary" style="width:100%;margin-top:14px" id="toCheckout" ${cf.length?'disabled':''}>Continue to checkout</button>
       ${me()?'':'<p class="muted" style="font-size:13px;text-align:center;margin-top:8px">You will be asked to log in or create an account.</p>'}
     </div></aside>
@@ -1150,7 +1180,7 @@ function pageCart(){
 const SLOTS=['9:00 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM'];
 function slotsFor(day){ return fmtDow(day)==='Sun' ? [] : SLOTS; }
 function pageCheckout(){
-  const u=me(); const t=cartTotals(); const c=UI.checkout||(UI.checkout={slot:slotsFor(DB.period.start)[0],pay:'shop',phone:u.phone,notes:'',agree:false});
+  const u=me(); const t=cartTotals();   const c=UI.checkout||(UI.checkout={slot:slotsFor(DB.period.start)[0],pay:'shop',phone:u.phone,notes:'',agree:false,delivery:'pickup',address:''});
   return `<div class="page-head"><div class="wrap"><div class="crumbs">Cart / Checkout</div><h1>Reserve for pickup</h1></div></div>
   <div class="wrap layout-2"><form class="stack" id="coForm">
     <div class="panel"><div class="panel-h"><h3>Pickup time on ${fmt(DB.period.start)}</h3></div><div class="panel-b">
@@ -1160,12 +1190,17 @@ function pageCheckout(){
       <div class="two"><div class="field"><label for="co-name">Full name (must match your ID)</label><input class="input" id="co-name" value="${esc(u.name)}" readonly></div><div class="field"><label for="co-phone">Mobile number</label><input class="input" id="co-phone" value="${esc(c.phone)}" required></div></div>
       <div class="field"><label for="co-notes">Notes for the counter (optional)</label><textarea class="input" id="co-notes" rows="2" placeholder="e.g. We'll bring a pickup truck for the chairs">${esc(c.notes)}</textarea></div>
     </div></div>
+    <div class="panel"><div class="panel-h"><h3>Collection method</h3></div><div class="panel-b stack">
+      <label class="opt"><input type="radio" name="delivery" value="pickup" ${c.delivery==='pickup'?'checked':''}><span><b>Personally pick up and return</b><small>Visit the RentHub GenSan hub at the corner of Camachili Street and Casquejo Street, Barangay Dadiangas East.</small></span></label>
+      <label class="opt"><input type="radio" name="delivery" value="delivery" ${c.delivery==='delivery'?'checked':''}><span><b>Request optional delivery</b><small>Third-party transportation within General Santos City. The customer pays the separately quoted delivery charge.</small></span></label>
+      ${c.delivery==='delivery'?`<div class="field"><label for="co-address">Delivery address within General Santos City</label><input class="input" id="co-address" value="${esc(c.address)}" placeholder="House/building, street and barangay" required></div>`:''}
+    </div></div>
     <div class="panel"><div class="panel-h"><h3>Payment</h3></div><div class="panel-b stack">
       <label class="opt"><input type="radio" name="pay" value="shop" ${c.pay==='shop'?'checked':''}><span><b>Pay in full at pickup</b><small>Cash, GCash, Maya or card at the counter. Your units are held until your pickup slot.</small></span></label>
       <label class="opt"><input type="radio" name="pay" value="gcash" ${c.pay==='gcash'?'checked':''}><span><b>Secure with a 20% GCash down payment (${peso(t.rent*.2)})</b><small>Recommended for peak dates. Pay the balance and deposit at pickup. (Simulated in this preview.)</small></span></label>
     </div></div>
     <div class="panel"><div class="panel-b stack">
-      <div class="notice gold">${I.store}<span><b>In-store pickup only.</b> We don't deliver or ship. Bring your reservation code and a valid government ID.</span></div>
+      <div class="notice gold">${I.store}<span><b>Choose pickup or optional delivery.</b> Bring a valid government ID for release. Delivery charge is quoted separately through third-party transportation.</span></div>
       <label class="toggle"><input type="checkbox" id="co-agree" ${c.agree?'checked':''}> I agree to the rental terms, pickup policy and damage charges.</label>
       <p class="err" id="coErr" hidden></p>
       <button class="btn btn-primary" type="submit">Place reservation</button>
@@ -1183,12 +1218,14 @@ function pageCheckout(){
 function placeOrder(){
   const c=UI.checkout; const err=$('#coErr');
   c.phone=$('#co-phone').value.trim(); c.notes=$('#co-notes').value.trim(); c.agree=$('#co-agree').checked;
+  c.address=$('#co-address')?.value.trim()||'';
   if(!/^[0-9 +()-]{7,}$/.test(c.phone)){ err.textContent='Enter a valid mobile number so we can reach you about your pickup.'; err.hidden=false; return; }
+  if(c.delivery==='delivery'&&!c.address){ err.textContent='Enter a delivery address within General Santos City.'; err.hidden=false; return; }
   if(!c.agree){ err.textContent='Please agree to the rental terms to place your reservation.'; err.hidden=false; return; }
   const cf=conflicts(cartUnits(),DB.period.start,DB.period.end);
   if(cf.length){ toast('Someone just booked some of these units. Please review your cart.',true); go('cart'); return; }
   let code; do{ code='RH-'+(24830+Math.floor(Math.random()*9000)); }while(DB.reservations.some(r=>r.code===code));
-  DB.reservations.unshift({code,userId:DB.session,lines:DB.cart.map(l=>({itemId:l.itemId,qty:l.qty,price:item(l.itemId).price,deposit:item(l.itemId).deposit,note:l.note||''})),packs:DB.cartPacks.map(p=>packSnapshot(p.pack,p.qty)),start:DB.period.start,end:DB.period.end,status:'pending',slot:c.slot,pay:c.pay,created:TODAY,notes:c.notes});
+  DB.reservations.unshift({code,userId:DB.session,lines:DB.cart.map(l=>({itemId:l.itemId,qty:l.qty,price:item(l.itemId).price,deposit:item(l.itemId).deposit,note:l.note||''})),packs:DB.cartPacks.map(p=>packSnapshot(p.pack,p.qty)),start:DB.period.start,end:DB.period.end,status:'pending',slot:c.slot,pay:c.pay,created:TODAY,notes:c.notes,delivery:c.delivery,address:c.address});
   const u=me(); u.phone=c.phone;
   DB.cart=[]; DB.cartPacks=[]; UI.checkout=null; UI.lastCode=code; save(); go('confirm');
 }
@@ -1201,7 +1238,7 @@ function pageConfirm(){
     <div class="panel-b" style="border-top:1px solid var(--line)"><div class="kv">
       <div><small>Pickup</small><b>${fmt(r.start)} · ${r.slot}</b></div><div><small>Return by</small><b>${fmt(r.end)} · 5:00 PM</b></div>
       <div><small>Rental subtotal</small><b>${peso(resRentalSubtotal(r))}</b></div><div><small>Refundable Security Deposit</small><b>${peso(resDeposit(r))}</b></div><div><small>Total Amount Due</small><b>${peso(resTotal(r))}</b></div></div>
-      <div class="notice gold" style="margin-top:14px">${I.id}<span>Bring a valid government ID under <b>${esc(user(r.userId).name)}</b>. Pickup is at our General Santos City shop only.</span></div>
+      <div class="notice gold" style="margin-top:14px">${I.id}<span>Bring a valid government ID under <b>${esc(user(r.userId).name)}</b>. ${r.delivery==='delivery'?`Requested third-party delivery to <b>${esc(r.address)}</b>; delivery charges are paid separately.`:'Personal pickup is at the corner of Camachili Street and Casquejo Street, Barangay Dadiangas East.'}</span></div>
       <div class="row" style="justify-content:center;margin-top:18px"><button class="btn btn-primary" data-go="account">Track my reservations</button><button class="btn btn-ghost" data-go="catalog">Keep browsing</button></div>
     </div></div></div>`;
 }
@@ -1380,8 +1417,8 @@ function footer(){
     <div style="display:grid;gap:12px;align-content:start"><div class="brand"><img src="${LOGO}" alt=""><span><b>Rent<span>Hub</span></b><small>GENSAN</small></span></div><p class="muted" style="font-size:14px;max-width:36ch">Rent what you need, the smarter choice indeed. Event, entertainment, photography, camping and beach gear in General Santos City.</p></div>
     <div><h4>Equipment</h4><ul>${CATS.map(c=>`<li><button data-cat-go="${c.id}">${c.name}</button></li>`).join('')}</ul></div>
     <div><h4>Renting</h4><ul><li><button data-go="how">How it works</button></li><li><button data-go="how">Pickup policy</button></li><li><button data-go="cart">Your cart</button></li><li><button data-go="account">My reservations</button></li></ul></div>
-    <div><h4>Visit us</h4><ul><li>Pioneer Avenue, Dadiangas West</li><li>General Santos City 9500</li><li>Mon–Sat 9 AM – 5 PM</li><li>Sun Closed</li></ul></div>
-  </div><div class="foot-bottom"><div class="wrap"><span>© 2026 RentHub GenSan. All rights reserved.</span><span>Pickup only · No delivery or shipping</span></div></div></footer>`;
+    <div><h4>Visit us</h4><ul><li>Corner of Camachili Street and Casquejo Street</li><li>Barangay Dadiangas East</li><li>General Santos City, South Cotabato</li><li>Mon–Sat 9 AM – 5 PM · Sun Closed</li></ul></div>
+  </div><div class="foot-bottom"><div class="wrap"><span>© 2026 RentHub GenSan. All rights reserved.</span><span>Pickup or optional third-party delivery</span></div></div></footer>`;
 }
 function render(){
   const u=me();
@@ -1403,7 +1440,7 @@ function bind(){
   const tc=$('#toCheckout'); if(tc) tc.onclick=()=>{ if(!me()){UI.authNext='checkout';go('auth');} else go('checkout'); };
   document.querySelectorAll('[data-cqi]').forEach(inp=>inp.onchange=()=>{ const l=DB.cart[+inp.dataset.cqi]; l.qty=Math.max(1,Math.floor(+inp.value||1)); save(); render(); });
   document.querySelectorAll('[data-pqi]').forEach(inp=>inp.onchange=()=>{ const p=DB.cartPacks[+inp.dataset.pqi]; p.qty=Math.max(1,Math.floor(+inp.value||1)); save(); render(); });
-  const co=$('#coForm'); if(co){ co.onsubmit=e=>{e.preventDefault();placeOrder();}; co.querySelectorAll('input[name=pay]').forEach(r=>r.onchange=()=>UI.checkout.pay=r.value); }
+  const co=$('#coForm'); if(co){ co.onsubmit=e=>{e.preventDefault();placeOrder();}; co.querySelectorAll('input[name=pay]').forEach(r=>r.onchange=()=>UI.checkout.pay=r.value); co.querySelectorAll('input[name=delivery]').forEach(r=>r.onchange=()=>{UI.checkout.delivery=r.value;render();}); }
   const af=$('#authForm'); if(af) af.onsubmit=e=>{e.preventDefault();doAuth();};
   const pf=$('#profForm'); if(pf) pf.onsubmit=e=>{e.preventDefault(); const u=me(); u.name=$('#p-name').value.trim()||u.name; u.phone=$('#p-phone').value.trim()||u.phone; save(); render(); toast('Profile saved');};
   const rq=$('#resQ'); if(rq) rq.oninput=()=>{UI.resQ=rq.value; const p=rq.selectionStart; render(); const n=$('#resQ'); n.focus(); n.setSelectionRange(p,p);};
